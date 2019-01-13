@@ -102,6 +102,7 @@ client.on('message', msg => {
 						.png()
 						.toBuffer((err3, data3, info3) => {
 							msg.reply(msg.author,{files:[data3]});//{embed:new Discord.RichEmbed({image:data3})});
+							msg.delete();
 						})
 						
 						
