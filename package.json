@@ -1,0 +1,20 @@
+{
+  "name": "helyi-torpe",
+  "version": "1.0.0",
+  "description": "Discord Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.3.0",
+    "convert-svg-to-png": "^0.5.0",
+    "discord.js": "^11.4.2",
+    "request": "^2.88.0",
+    "sharp": "^0.21.2",
+    "svg2img": "^0.5.0",
+    "text-to-svg": "^3.1.3"
+  }
+}
