@@ -92,7 +92,7 @@ client.on('message', msg => {
 					.png()
 					.toBuffer(async(err2, data2, info2) => {
 
-						s2i = await convert(svg);
+						s2i = await convert(svg, {puppeteer:"--no-sandbox"});
 
 						sharp(data2)
 						.overlayWith(s2i,{
