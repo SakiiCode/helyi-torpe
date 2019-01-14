@@ -23,12 +23,12 @@ client.on('ready', () => {
 client.on('message', msg => {
   if (msg.content.substring(0,5) == '.meme' && msg.content.length>5) {
     
-	msg.channel.fetchMessages({ limit: 10 })
+	msg.channel.fetchMessages({ limit: 20 }).filter(msg => msg.attachments.length > 0)
 		.then(messages =>
 		{
 			//filtered = messages.filter(m => m.author.id === msg.author.id);
 			//url = filtered.first().attachments.first().url;
-			url = msg.attachments.first().url;
+			url = messages.first().attachments.first().url;
 			console.log(url);
 			
 			
