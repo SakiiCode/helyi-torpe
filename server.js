@@ -21,20 +21,18 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-  if (msg.content.substring(0,5) == '.meme' && msg.content.length>5) {
+  if (msg.content.substring(0,5) == '.meme' && msg.content.length>6) {
     
 	msg.channel.fetchMessages({ limit: 20 })
 		.then(messages =>
 		{
-			//filtered = messages.filter(m => m.author.id === msg.author.id);
-			//url = filtered.first().attachments.first().url;
+
 			mesgs = messages.filter(m => (m.attachments.size > 0)).filter(m => m.author.id === msg.author.id);
-			//console.log(mesgs);
-			//messages.forEach(m2 => (console.log(m2.attachments.size)));
+
 			mesg = mesgs.first();
-			url = mesg.attachments.first().url;
-			//console.log(mesg);
 			
+			url = mesg.attachments.first().url;
+
 			
 			text=msg.content.substring(6);
 					  
@@ -60,17 +58,15 @@ client.on('message', msg => {
 			imgpadding=20;
 			destw=bigw-2*imgpadding;
 			desth=480;
-			//destratio = destw/desth;
 			console.log("Dest:"+destw+","+desth);
 			
-			imgy=txth+2*txtpadding+imgpadding; //KÉP HELYE FELÜLRŐL
+			//KÉP HELYE FELÜLRŐL
+			imgy=txth+2*txtpadding+imgpadding; 
 			
 			//NAGY KÉP MÉRETEI
-			
 			bigh=txth+2*txtpadding+desth+2*imgpadding;
 			console.log("Big:"+bigw+","+bigh);
 
-			//imagecopyresized($im, $source, $bigw/2-$neww/2, $imgy, 0, 0, $neww, $newh, $originalw, $originalh);
 					  
 			
 			
@@ -122,23 +118,17 @@ client.on('message', msg => {
 				})
 			});
 			
-			
-			
-			
-			
-			/*sharp('img.jpg')
-			  .resize(300, 200)
-			  .toFile('output.jpg', function(err) {
-				msg.reply(err);
-				// output.jpg is a 300 pixels wide and 200 pixels high image
-				// containing a scaled and cropped version of input.jpg
-			  });*/
+
 			
 			
 		}
 	
-	) // console.log(`${messages.filter(m => m.author.id === msg.author.id).size} messages`)
+	) 
 	.catch(console.error);
+  }else if(msg.content.substring(0,5) == '.help'){
+	  msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```.help            súgó\r\n\.meme <szöveg>   legutóbbi képedhez felirat           \r\n```"}));
+	  
+	 
   }
 });
 
