@@ -4,7 +4,7 @@ const client = new Discord.Client();
 const sharp = require('sharp');
 
 const TextToSVG = require('text-to-svg');
-const textToSVG = TextToSVG.loadSync();
+const textToSVG = TextToSVG.loadSync('Anonymous_Pro.ttf');
 
 //const s2i = require('svg2img');
 const { convert } = require('convert-svg-to-png');
@@ -12,7 +12,7 @@ const { convert } = require('convert-svg-to-png');
 var port = process.env.PORT || 3000
 
 const attributes = {fill: 'black'};
-const options = {x: 0, y: 0, fontSize: 72, anchor: 'top', attributes: attributes};
+const options = {x: 0, y: 0, fontSize: 50, anchor: 'top', attributes: attributes};
  
 
 
@@ -23,13 +23,17 @@ client.on('ready', () => {
 client.on('message', msg => {
   if (msg.content.substring(0,5) == '.meme' && msg.content.length>5) {
     
-	msg.channel.fetchMessages({ limit: 20 }).filter(msg => msg.attachments.length > 0)
+	msg.channel.fetchMessages({ limit: 20 })
 		.then(messages =>
 		{
 			//filtered = messages.filter(m => m.author.id === msg.author.id);
 			//url = filtered.first().attachments.first().url;
-			url = messages.first().attachments.first().url;
-			console.log(url);
+			mesgs = messages.filter(m => (m.attachments.size > 0)).filter(m => m.author.id === msg.author.id);
+			//console.log(mesgs);
+			//messages.forEach(m2 => (console.log(m2.attachments.size)));
+			mesg = mesgs.first();
+			url = mesg.attachments.first().url;
+			//console.log(mesg);
 			
 			
 			text=msg.content.substring(6);
@@ -60,7 +64,7 @@ client.on('message', msg => {
 			console.log("Dest:"+destw+","+desth);
 			
 			imgy=txth+2*txtpadding+imgpadding; //KÉP HELYE FELÜLRŐL
-			console.log("Pos:"+imgpadding+","+imgy);
+			
 			//NAGY KÉP MÉRETEI
 			
 			bigh=txth+2*txtpadding+desth+2*imgpadding;
@@ -76,7 +80,8 @@ client.on('message', msg => {
 					.resize({width:destw, height:desth, fit: 'inside'})
 					.toBuffer((err, data, info) => {
 					
-
+					console.log("Pic:"+info.width+","+info.height);
+					console.log("Pos:"+(bigw/2-info.width/2)+","+imgy);
 					sharp({
 						create: {
 							width: bigw,
@@ -105,7 +110,7 @@ client.on('message', msg => {
 						})
 						.png()
 						.toBuffer((err3, data3, info3) => {
-							msg.channel.sendMessage(msg.author,{files:[data3]});//{embed:new Discord.RichEmbed({image:data3})});
+							msg.channel.send(msg.author,{files:[data3]});//{embed:new Discord.RichEmbed({image:data3})});
 							msg.delete();
 						})
 						
