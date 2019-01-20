@@ -129,7 +129,17 @@ client.on('message', msg => {
 	  msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```.help            súgó\r\n\.meme <szöveg>   legutóbbi képedhez felirat           \r\n```"}));
 	  
 	 
+  }else if(msg.content == 'xd'){
+	  channel.send({
+		  files: [{
+			attachment: 'xd.gif',
+			name: 'asd'
+		  }]
+		})
+  .then(console.log)
+  .catch(console.error);
   }
+  
 });
 
 client.login(process.env.TOKEN);
