@@ -126,18 +126,17 @@ client.on('message', msg => {
 	) 
 	.catch(console.error);
   }else if(msg.content.substring(0,5) == '.help'){
-	  msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```.help            súgó\r\n\.meme <szöveg>   legutóbbi képedhez felirat           \r\n```"}));
+	  msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```.help            súgó\r\n\.meme <szöveg>   legutóbbi képedhez felirat           \r\nxd               xd```"}));
 	  
 	 
   }else if(msg.content == 'xd'){
-	  channel.send({
+	  msg.channel.send({
 		  files: [{
 			attachment: 'xd.gif',
-			name: 'asd'
+			name: 'xd.gif'
 		  }]
 		})
-  .then(console.log)
-  .catch(console.error);
+	  .catch(console.error);
   }
   
 });
