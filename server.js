@@ -129,8 +129,8 @@ client.on('message', msg => {
 	  msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```.help            súgó\r\n\.meme <szöveg>   legutóbbi képedhez felirat           \r\nxd               xd```"}));
 	  
 	 
-  }else if(msg.content == 'xd' || msg.content == 'Xd' || msg.content == 'xD' ||
-	  msg.content == 'xdd' || msg.content == 'Xdd' || msg.content == 'xDD' 
+  }else if(msg.content == 'xd' || msg.content == 'Xd' || msg.content == 'xD' || msg.content == 'XD' ||
+	  msg.content == 'xdd' || msg.content == 'Xdd' || msg.content == 'xDD' || msg.content == 'XDD' 
 	){
 	  msg.channel.send({
 		  files: [{
