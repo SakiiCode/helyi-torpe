@@ -183,10 +183,15 @@ client.on('message', msg => {
 	.catch(err => {console.error(err);msg.channel.stopTyping();});
   }else if(msg.content.substring(0,5) == '.help'){
 
-    if((botChannel !== null) && msg.channel != botChannel){
+    if((botChannel === null) || msg.channel != botChannel){
       msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
     }else{
-      msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```.help            súgó\r\n\.meme <szöveg>   legutóbbi képedhez felirat           \r\nxd               xd```"}));
+      msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```"+
+      ".help            súgó\r\n"+
+      ".meme <szöveg>   legutóbbi képedhez felirat           \r\n"+
+      ".iam <szerep>    szerep-címke hozzáadás\r\n"+
+      "xd               xd```"
+      }));
     }
 
   }else if(msg.content == 'xd' || msg.content == 'Xd' || msg.content == 'xD' || msg.content == 'XD' ||
@@ -199,37 +204,72 @@ client.on('message', msg => {
   		})
   	  .catch(console.error);
   }else if(msg.content.substring(0,4) == ".iam"){
-    if((botChannel !== null) && msg.channel != botChannel){
+    if((botChannel === null) || msg.channel != botChannel){
       msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
     }else{
       role = msg.content.split(' ')[1];
       if(role == "tesztelo"){
         msg.member.addRole('539878542586937377');
+        msg.reply('mostantól tesztelő!');
       }else if(role == "producer"){
         msg.member.addRole('460488813525991438');
+        msg.reply('mostantól producer!');
       }else if(role == "hang"){
         msg.member.addRole('460185178443087874');
+        msg.reply('mostantól hangmérnök!');
       }else if(role == "kod"){
         msg.member.addRole('460185211230224395');
+        msg.reply('mostantól programozó!');
       }else if(role == "grafikus"){
         msg.member.addRole('460185260848840705');
+        msg.reply('mostantól grafikus!');
       }else if(role == "palya"){
         msg.member.addRole('460185260244729877');
+        msg.reply('mostantól pályatervező!');
       }else if(role == "jammer"){
         msg.member.addRole('539878964248838181');
+        msg.reply('mostantól jammer!');
       }else if(role == "youtuber"){
         msg.member.addRole('539878321551573002');
+        msg.reply('mostantól YouTuber!');
       }
     }
-
-
-
+  }else if(msg.content.substring(0,4) == ".msg" && msg.author.id=="217267395696263169"){
+    msg.channel.send(msg.content.substring(5));
+    msg.delete();
   }
+
+  /*else if(msg.content.substring(0,5) == ".test"){
+    msg.member.guild.channels.get("442082649700302848").send(
+      "Üdvözlünk " + msg.member.user + " a " + msg.member.guild.name + " szerveren, válassz szerepet:\n"+
+      "**.iam tesztelo** - Tesztelő\n"+
+      "**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
+      "**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
+      "**.iam kod** - Programozó\n"+
+      "**.iam grafikus** - 2D/3D Grafikus\n"+
+      "**.iam palya** - Pályatervező\n"+
+      "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n"+
+      "**.iam youtuber** - YouTuber/Streamer");
+
+  }*/
 
 });
 
-function WordWrap(str, width)
-{
+client.on("guildMemberAdd", (member) => {
+  console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
+  member.guild.channels.get("442082649700302848").send(
+    "Üdvözlünk " + member.user + " a " + member.guild.name + " szerveren, választhatsz szerepet:\n"+
+    "**.iam tesztelo** - Tesztelő\n"+
+    "**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
+    "**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
+    "**.iam kod** - Programozó\n"+
+    "**.iam grafikus** - 2D/3D Grafikus\n"+
+    "**.iam palya** - Pályatervező\n"+
+    "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n"+
+    "**.iam youtuber** - YouTuber/Streamer");
+});
+
+function WordWrap(str, width){
     splitChars = [ ' ', '-', '\t' ];
 newLine='\n';
     words = str.split(' ');
