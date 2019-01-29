@@ -190,7 +190,7 @@ client.on('message', msg => {
       ".help            súgó\n"+
       ".meme <szöveg>   legutóbbi képedhez felirat           \n"+
       ".roles           szerep-címkék listája\n"+
-      ".iam <szerep>    szerep-címke hozzáadás\n"+
+      ".iam <szerep>    szerep-címke felvevése\n"+
       "xd               xd```"
       }));
     }
