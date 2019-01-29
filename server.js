@@ -32,8 +32,13 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
+  botChannel=null;
+  if(msg.guild !== null){
+    botChannel = msg.guild.channels.get('442082649700302848');
+  }
+
   if (msg.content.substring(0,5) == '.meme' && msg.content.length>6) {
-    
+    msg.channel.startTyping();
 	msg.channel.fetchMessages({ limit: 20 })
 		.then(messages =>
 		{
@@ -41,20 +46,20 @@ client.on('message', msg => {
 			mesgs = messages.filter(m => (m.attachments.size > 0)).filter(m => m.author.id === msg.author.id);
 
 			mesg = mesgs.first();
-			
+
 			url = mesg.attachments.first().url;
 
-			
-			text=msg.content.substring(6);
-					  
-			
-					  
-					  
 
-			
+			text=msg.content.substring(6);
+
+
+
+
+
+
 			bigw=700;
-			
-			
+
+
 
 			//SZÖVEG MÉRETEI
 			txtpadding=20;//Math.max(100-text.length*5, 20);
@@ -62,17 +67,17 @@ client.on('message', msg => {
 			//txth=100;
 			//fontsize=50;
 			//console.log(txtpadding);
-			
-			
-			charsPerLines = Math.floor(txtwmax/letterWidthPixels);  
-			
+
+
+			charsPerLines = Math.floor(txtwmax/letterWidthPixels);
+
 			//lines = wrap(text, {width: charsPerLines, indent:'', newline: "\n", trim: true});
 			lines = WordWrap(text, charsPerLines);
 			linesArr = lines.split(/\r\n|\r|\n/);
 			linesCount = linesArr.length;
-			
+
 			txth=letterHeightPx*linesCount;
-			
+
 			svgs = [];
 			for(i=0;i<linesCount;i++){
 				svgs.push(textToSVG.getSVG(linesArr[i], options));
@@ -82,29 +87,30 @@ client.on('message', msg => {
 			imgpadding=20;
 			destw=bigw-2*imgpadding;
 			desth=480;
-			
-			
+
+
 			//KÉP HELYE FELÜLRŐL
-			imgy=txth+2*txtpadding+imgpadding; 
-			
+			imgy=txth+2*txtpadding+imgpadding;
+
 			//NAGY KÉP MÉRETEI
 			bigh=txth+2*txtpadding+desth+2*imgpadding;
 			console.log("Big:"+bigw+","+bigh);
 			console.log("Textlines("+(txtwmax/letterWidthPixels)+"):"+charsPerLines+"*"+linesCount);
 			console.log("Txtpadding:"+txtpadding);
 			console.log("Imgpadding:"+imgpadding);
-			console.log("DestSize:"+destw+","+desth);	  
-			
-			
+			console.log("DestSize:"+destw+","+desth);
+
+
 			var request = require('request').defaults({ encoding: null });
 			request.get(url, function (err, res, body) {
 				if(err){
 					console.error("Download error:" + err);
+          msg.channel.stopTyping();
 				}
 				sharp(body)
 					.resize({width:destw, height:desth, fit: 'inside'})
 					.toBuffer((err, data, info) => {
-					
+
 					console.log("Pic:"+info.width+","+info.height);
 					console.log("Pos:"+(bigw/2-info.width/2)+","+imgy);
 					sharp({
@@ -123,6 +129,7 @@ client.on('message', msg => {
 					.toBuffer((err2, data2, info2) => {
 						if(err2){
 							console.error("Image overlay error: " + err2);
+              msg.channel.stopTyping();
 							return;
 						}
 						currentLine=0;
@@ -132,10 +139,10 @@ client.on('message', msg => {
 									args: ['--no-sandbox', '--disable-setuid-sandbox']
 								}
 							});
-							
+
 							dimensions = sizeOf(s2i);
 							console.log(dimensions.width, dimensions.height);
-							
+
 							return sharp(total)
 							.overlayWith(s2i,{
 								top:txtpadding+currentLine*letterHeightPx,
@@ -144,52 +151,81 @@ client.on('message', msg => {
 							.png()
 							.toBuffer()
 							.then((data3) => { currentLine++; return data3; })
-							.catch(err3 => { console.error("Text overlay error: " + err3); });
+							.catch(err3 => { console.error("Text overlay error: " + err3); msg.channel.stopTyping();});
 
 						}, data2).then(function(total) {
 							msg.channel.send(msg.author,{files:[total]});
-								
-								msg.delete().catch(err => {console.error(err.message);});
+              msg.channel.stopTyping();
+								msg.delete().catch(err => {console.error(err.message);msg.channel.stopTyping();});
 						});
-						
+
 						/*svgs.reduce(async (previousPromise, nextID) => {
 							await previousPromise;
-							
-							
-							
+
+
+
 						}, Promise.resolve());*/
-						
-						
-						
+
+
+
 					})
 
 
 				})
 			});
-			
 
-			
-			
+
+
+
 		}
-	
-	) 
-	.catch(console.error);
+
+	)
+	.catch(err => {console.error(err);msg.channel.stopTyping();});
   }else if(msg.content.substring(0,5) == '.help'){
-	  msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```.help            súgó\r\n\.meme <szöveg>   legutóbbi képedhez felirat           \r\nxd               xd```"}));
-	  
-	 
+
+    if((botChannel !== null) && msg.channel != botChannel){
+      msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+    }else{
+      msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```.help            súgó\r\n\.meme <szöveg>   legutóbbi képedhez felirat           \r\nxd               xd```"}));
+    }
+
   }else if(msg.content == 'xd' || msg.content == 'Xd' || msg.content == 'xD' || msg.content == 'XD' ||
-	  msg.content == 'xdd' || msg.content == 'Xdd' || msg.content == 'xDD' || msg.content == 'XDD' 
-	){
-	  msg.channel.send({
-		  files: [{
-			attachment: 'xd.gif',
-			name: 'xd.gif'
-		  }]
-		})
-	  .catch(console.error);
+	  msg.content == 'xdd' || msg.content == 'Xdd' || msg.content == 'xDD' || msg.content == 'XDD'){
+  	  msg.channel.send({
+  		  files: [{
+  			attachment: 'xd.gif',
+  			name: 'xd.gif'
+  		  }]
+  		})
+  	  .catch(console.error);
+  }else if(msg.content.substring(0,4) == ".iam"){
+    if((botChannel !== null) && msg.channel != botChannel){
+      msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+    }else{
+      role = msg.content.split(' ')[1];
+      if(role == "tesztelo"){
+        msg.member.addRole('539878542586937377');
+      }else if(role == "producer"){
+        msg.member.addRole('460488813525991438');
+      }else if(role == "hang"){
+        msg.member.addRole('460185178443087874');
+      }else if(role == "kod"){
+        msg.member.addRole('460185211230224395');
+      }else if(role == "grafikus"){
+        msg.member.addRole('460185260848840705');
+      }else if(role == "palya"){
+        msg.member.addRole('460185260244729877');
+      }else if(role == "jammer"){
+        msg.member.addRole('539878964248838181');
+      }else if(role == "youtuber"){
+        msg.member.addRole('539878321551573002');
+      }
+    }
+
+
+
   }
-  
+
 });
 
 function WordWrap(str, width)
@@ -198,7 +234,7 @@ function WordWrap(str, width)
 newLine='\n';
     words = str.split(' ');
 		//words= Explode(str, splitChars);
-    
+
     curLineLength = 0;
     strBuilder='';
     //StringBuilder strBuilder = new StringBuilder();
@@ -214,7 +250,7 @@ newLine='\n';
             // Avoids situation where wrapped whitespace causes emptylines in text.
             if (curLineLength > 0)
             {
-            	
+
                 //strBuilder.Append(Environment.NewLine);
                 strBuilder += newLine;
                 curLineLength = 0;
@@ -224,7 +260,7 @@ newLine='\n';
             // split the word up.
             while (word.length > width)
             {
-            		
+
                 //strBuilder.Append(word.Substring(0, width - 1) + "-");
                 strBuilder += word.substr(0,width-1) + "-";
                 //word = word.Substring(width - 1);
@@ -249,5 +285,3 @@ client.login(process.env.TOKEN);
 
 
 require('http').createServer().listen(process.env.PORT)
-
-
