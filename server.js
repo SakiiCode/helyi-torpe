@@ -187,9 +187,10 @@ client.on('message', msg => {
       msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
     }else{
       msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```"+
-      ".help            súgó\r\n"+
-      ".meme <szöveg>   legutóbbi képedhez felirat           \r\n"+
-      ".iam <szerep>    szerep-címke hozzáadás\r\n"+
+      ".help            súgó\n"+
+      ".meme <szöveg>   legutóbbi képedhez felirat           \n"+
+      ".roles           szerep-címkék listája\n"+
+      ".iam <szerep>    szerep-címke hozzáadás\n"+
       "xd               xd```"
       }));
     }
@@ -237,21 +238,23 @@ client.on('message', msg => {
   }else if(msg.content.substring(0,4) == ".msg" && msg.author.id=="217267395696263169"){
     msg.channel.send(msg.content.substring(5));
     msg.delete();
+  }else if(msg.content.substring(0,6) == ".roles"){
+    if((botChannel === null) || msg.channel != botChannel){
+      msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+    }else{
+      msg.reply(
+        "válassz szerepet:\n"+
+        "**.iam tesztelo** - Tesztelő\n"+
+        "**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
+        "**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
+        "**.iam kod** - Programozó\n"+
+        "**.iam grafikus** - 2D/3D Grafikus\n"+
+        "**.iam palya** - Pályatervező\n"+
+        "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n"+
+        "**.iam youtuber** - YouTuber/Streamer");
+      }
+
   }
-
-  /*else if(msg.content.substring(0,5) == ".test"){
-    msg.member.guild.channels.get("442082649700302848").send(
-      "Üdvözlünk " + msg.member.user + " a " + msg.member.guild.name + " szerveren, válassz szerepet:\n"+
-      "**.iam tesztelo** - Tesztelő\n"+
-      "**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
-      "**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
-      "**.iam kod** - Programozó\n"+
-      "**.iam grafikus** - 2D/3D Grafikus\n"+
-      "**.iam palya** - Pályatervező\n"+
-      "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n"+
-      "**.iam youtuber** - YouTuber/Streamer");
-
-  }*/
 
 });
 
