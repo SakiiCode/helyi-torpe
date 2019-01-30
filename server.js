@@ -156,7 +156,7 @@ client.on('message', msg => {
 						}, data2).then(function(total) {
 							msg.channel.send(msg.author,{files:[total]});
               msg.channel.stopTyping();
-								msg.delete().catch(err => {console.error(err.message);msg.channel.stopTyping();});
+								//msg.delete().catch(err => {console.error(err.message);msg.channel.stopTyping();});
 						});
 
 						/*svgs.reduce(async (previousPromise, nextID) => {
