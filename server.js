@@ -186,8 +186,8 @@ client.on('message', msg => {
     if((botChannel === null) || msg.channel != botChannel){
       msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
     }else{
-      msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe súgója",description:"```"+
-      ".help            súgó\n"+
+      msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe parancsai",description:"```"+
+      ".help            parancsok\n"+
       ".meme <szöveg>   legutóbbi képedhez felirat           \n"+
       ".roles           szerep-címkék listája\n"+
       ".iam <szerep>    szerep-címke felvevése\n"+
@@ -233,6 +233,8 @@ client.on('message', msg => {
       }else if(role == "youtuber"){
         msg.member.addRole('539878321551573002');
         msg.reply('mostantól YouTuber!');
+      }else{
+        msg.reply(' érvénytelen szerepkör!')
       }
     }
   }else if(msg.content.substring(0,4) == ".msg" && msg.author.id=="217267395696263169"){
