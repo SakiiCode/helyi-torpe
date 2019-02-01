@@ -7,7 +7,6 @@ const TextToSVG = require('text-to-svg');
 const textToSVG = TextToSVG.loadSync('Anonymous_Pro.ttf');
 
 
-//const s2i = require('svg2img');
 const { convert } = require('convert-svg-to-png');
 
 var wrap = require('word-wrap');
@@ -22,13 +21,14 @@ var port = process.env.PORT || 3000
 const attributes = {fill: 'black'};
 const options = {x: 0, y: 0, fontSize: 48, anchor: 'top', attributes: attributes};
 
-  var splitChars = [ ' ', '-', '\t' ];
-  var letterWidthPixels = 28;
-  var letterHeightPx = 65;
-
+var splitChars = [ ' ', '-', '\t' ];
+var letterWidthPixels = 28;
+var letterHeightPx = 65;
+var pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  client.user.setActivity('#bot-spam | .help', { type: 'WATCHING' });
 });
 
 client.on('message', msg => {
@@ -39,14 +39,17 @@ client.on('message', msg => {
 
   if (msg.content.substring(0,5) == '.meme' && msg.content.length>6) {
     msg.channel.startTyping();
-	msg.channel.fetchMessages({ limit: 20 })
+    msg.channel.fetchMessages({ limit: 20 })
 		.then(messages =>
 		{
 
 			mesgs = messages.filter(m => (m.attachments.size > 0)).filter(m => m.author.id === msg.author.id);
 
 			mesg = mesgs.first();
-
+      if(mesg == undefined){
+        msg.channel.stopTyping();
+        return;
+      }
 			url = mesg.attachments.first().url;
 
 
@@ -156,7 +159,7 @@ client.on('message', msg => {
 						}, data2).then(function(total) {
 							msg.channel.send(msg.author,{files:[total]});
               msg.channel.stopTyping();
-								//msg.delete().catch(err => {console.error(err.message);msg.channel.stopTyping();});
+							mesg.delete().catch(err => {console.error(err.message);});
 						});
 
 						/*svgs.reduce(async (previousPromise, nextID) => {
@@ -186,13 +189,17 @@ client.on('message', msg => {
     if((botChannel === null) || msg.channel != botChannel){
       msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
     }else{
-      msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe parancsai",description:"```"+
-      ".help            parancsok\n"+
-      ".meme <szöveg>   legutóbbi képedhez felirat           \n"+
-      ".roles           szerep-címkék listája\n"+
-      ".iam <szerep>    szerep-címke felvevése\n"+
-      "xd               xd```"
-      }));
+      //msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe parancsai",description:"```"+
+      msg.channel.send("**A Helyi Törpe parancsai**\n```"+
+      "#bot-spam\n"+
+      "   .help                          parancsok\n"+
+      "   .roles                         szerep-címkék listája\n"+
+      "   .iam <szerep>                  szerep-címke felvevése\n"+
+      "bárhol\n"+
+      "   .meme <szöveg>                 legutóbbi képedhez felirat\n"+
+      "   .poll <kérdés,válasz1,...>     szavazás\n"+
+      "   xd                             xd```"
+      );
     }
 
   }else if(msg.content == 'xd' || msg.content == 'Xd' || msg.content == 'xD' || msg.content == 'XD' ||
@@ -211,28 +218,28 @@ client.on('message', msg => {
       role = msg.content.split(' ')[1];
       if(role == "tesztelo"){
         msg.member.addRole('539878542586937377');
-        msg.reply('mostantól tesztelő!');
+        msg.reply('mostantól tesztelő vagy!');
       }else if(role == "producer"){
         msg.member.addRole('460488813525991438');
-        msg.reply('mostantól producer!');
+        msg.reply('mostantól producer vagy!');
       }else if(role == "hang"){
         msg.member.addRole('460185178443087874');
-        msg.reply('mostantól hangmérnök!');
+        msg.reply('mostantól hangmérnök vagy!');
       }else if(role == "kod"){
         msg.member.addRole('460185211230224395');
-        msg.reply('mostantól programozó!');
+        msg.reply('mostantól programozó vagy!');
       }else if(role == "grafikus"){
         msg.member.addRole('460185260848840705');
-        msg.reply('mostantól grafikus!');
+        msg.reply('mostantól grafikus vagy!');
       }else if(role == "palya"){
         msg.member.addRole('460185260244729877');
-        msg.reply('mostantól pályatervező!');
+        msg.reply('mostantól pályatervező vagy!');
       }else if(role == "jammer"){
         msg.member.addRole('539878964248838181');
-        msg.reply('mostantól jammer!');
+        msg.reply('mostantól jammer vagy!');
       }else if(role == "youtuber"){
         msg.member.addRole('539878321551573002');
-        msg.reply('mostantól YouTuber!');
+        msg.reply('mostantól YouTuber vagy!');
       }else{
         msg.reply(' érvénytelen szerepkör!')
       }
@@ -256,6 +263,26 @@ client.on('message', msg => {
         "**.iam youtuber** - YouTuber/Streamer");
       }
 
+
+  }else if(msg.content.substring(0,5) == ".poll"){
+    attr = msg.content.substring(6).split(",");
+    reply = "__szavazás: **"+attr[0]+"**__\n";
+    answers = Math.min(attr.length-1,11);
+    for(i=0;i<answers;i++){
+      reply += pollChars[i]+":"+attr[i+1]+"\n";
+    }
+
+    msg.reply(reply)
+    .then(message => {
+      chs = pollChars.slice(0,answers);
+      //console.log(chs);
+      Promise.reduce(chs, function (total, ch) {
+        return message.react(ch).then(reaction => {return reaction});
+
+      },chs[0]);
+
+
+    });
   }
 
 });
