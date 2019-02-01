@@ -15,6 +15,12 @@ var sizeOf = require('buffer-image-size');
 
 var Promise = require("bluebird");
 
+var cron = require('node-cron');
+
+const request = require('request');
+
+let date = require('date-and-time');
+
 
 var port = process.env.PORT || 3000
 
@@ -29,6 +35,11 @@ var pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮',
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity('#bot-spam | .help', { type: 'WATCHING' });
+  cron.schedule('0 13 * * *', () =>{
+    getJams(processJams);
+
+  });
+  //getJams(processJams);
 });
 
 client.on('message', msg => {
@@ -266,13 +277,13 @@ client.on('message', msg => {
 
   }else if(msg.content.substring(0,5) == ".poll"){
     attr = msg.content.substring(6).split(",");
-    reply = "__szavazás: **"+attr[0]+"**__\n";
+    reply = "@here __szavazás: **"+attr[0]+"**__\n";
     answers = Math.min(attr.length-1,11);
     for(i=0;i<answers;i++){
       reply += pollChars[i]+":"+attr[i+1]+"\n";
     }
 
-    msg.reply(reply)
+    msg.channel.send(reply)
     .then(message => {
       chs = pollChars.slice(0,answers);
       //console.log(chs);
@@ -283,6 +294,9 @@ client.on('message', msg => {
 
 
     });
+
+  }else if(msg.content.substring(0,5) == ".test"){
+    getJams();
   }
 
 });
@@ -351,6 +365,59 @@ newLine='\n';
     }
 
     return strBuilder;
+}
+
+function getJams(callback){
+  request('http://www.indiegamejams.com/calfeed/index.php', { json: true }, (err, res, body) => {
+    if (err) { return console.log(err); }
+    jams = [];
+    for(i=0;i<body.length;i++){
+      jam = body[i];
+
+      //console.log(jam.summary);
+      //20190301T050000Z
+      if(jam.dtstart != undefined){
+        startdate = date.addHours(date.parse(jam.dtstart, 'YYYYMMDDThhmmssZ'),1);
+        //console.log(startdate);
+        jam2 = {name:jam.summary,url:jam.description.split('\n')[0], start:startdate};
+        jams.push(jam2);
+        //console.log(jam2);
+      }
+    }
+
+
+    jams.sort(function(a,b){
+      // Turn your strings into dates, and then subtract them
+      // to get a value that is either negative, positive, or zero.
+      sum = date.subtract(a.start, b.start).toSeconds();
+      //console.log(sum);
+      return sum;
+    });
+    currentjams = jams.filter((jam)=>{
+      return date.subtract(jam.start,new Date()).toSeconds() >0;
+
+    });
+    //console.log(currentjams);
+    callback(currentjams.slice(0,5));
+  });
+}
+
+function processJams(jams){
+
+  guild = client.guilds.get('248820876814843904');
+  jammer = guild.roles.get('539878964248838181');
+  reply=jammer + "ek, ezeken tudtok részt venni a következő néhány napon:\n";
+  for(i=0;i<jams.length;i++){
+    jam = jams[i];
+    reply += jam.name+"  ("+date.format(jam.start, 'MMM. DD. HH:mm')+"-tól)\n";
+    reply += "    <"+jam.url+">\n";
+  }
+  channel = guild.channels.get('442082917049565214').send(reply);
+
+
+
+
+
 }
 
 client.login(process.env.TOKEN);
