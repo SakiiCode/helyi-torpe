@@ -15,7 +15,7 @@ var sizeOf = require('buffer-image-size');
 
 var Promise = require("bluebird");
 
-var cron = require('node-cron');
+var CronJob = require('cron').CronJob;
 
 const request = require('request');
 
@@ -32,14 +32,15 @@ var letterWidthPixels = 28;
 var letterHeightPx = 65;
 var pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
 
+const job = new CronJob('0 20 13 * * *', function() {
+  getJams(processJams);
+}, null, true, 'Europe/Budapest');
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity('#bot-spam | .help', { type: 'WATCHING' });
-  cron.schedule('0 13 * * *', () =>{
-    getJams(processJams);
+  job.start();
 
-  });
-  //getJams(processJams);
 });
 
 client.on('message', msg => {
@@ -270,8 +271,8 @@ client.on('message', msg => {
         "**.iam kod** - Programozó\n"+
         "**.iam grafikus** - 2D/3D Grafikus\n"+
         "**.iam palya** - Pályatervező\n"+
-        "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n"+
-        "**.iam youtuber** - YouTuber/Streamer");
+        "**.iam youtuber** - YouTuber/Streamer"+
+        "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n");
       }
 
 
@@ -312,7 +313,8 @@ client.on("guildMemberAdd", (member) => {
     "**.iam grafikus** - 2D/3D Grafikus\n"+
     "**.iam palya** - Pályatervező\n"+
     "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n"+
-    "**.iam youtuber** - YouTuber/Streamer");
+    "**.iam youtuber** - YouTuber/Streamer\n"+
+    "**Kérlek olvasd el a "+member.guild.channels.get("442084233767419916")+" csatornát is!**");
 });
 
 function WordWrap(str, width){
