@@ -32,7 +32,7 @@ var letterWidthPixels = 28;
 var letterHeightPx = 65;
 var pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
 
-const job = new CronJob('0 20 13 * * *', function() {
+const job = new CronJob('0 20 13 * * 1,5,6', function() {
   getJams(processJams);
 }, null, true, 'Europe/Budapest');
 
