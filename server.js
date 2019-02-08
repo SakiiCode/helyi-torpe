@@ -296,9 +296,9 @@ client.on('message', msg => {
 
     });
 
-  }else if(msg.content.substring(0,5) == ".test"){
+  }/*else if(msg.content.substring(0,5) == ".test"){
     getJams();
-  }
+  }*/
 
 });
 
