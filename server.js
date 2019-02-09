@@ -296,6 +296,9 @@ client.on('message', msg => {
 
     });
 
+  }else if(msg.content.substring(0,7) == ".source"){
+    msg.reply("https://github.com/SakiiCode/helyi-torpe/blob/master/server.js");
+
   }/*else if(msg.content.substring(0,5) == ".test"){
     getJams();
   }*/
