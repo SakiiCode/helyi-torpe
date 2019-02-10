@@ -207,6 +207,7 @@ client.on('message', msg => {
       "   .help                          parancsok\n"+
       "   .roles                         szerep-címkék listája\n"+
       "   .iam <szerep>                  szerep-címke felvevése\n"+
+      "   .source                        a Helyi Törpe forráskódja\n"+
       "bárhol\n"+
       "   .meme <szöveg>                 legutóbbi képedhez felirat\n"+
       "   .poll <kérdés,válasz1,...>     szavazás\n"+
@@ -297,8 +298,11 @@ client.on('message', msg => {
     });
 
   }else if(msg.content.substring(0,7) == ".source"){
-    msg.reply("https://github.com/SakiiCode/helyi-torpe/blob/master/server.js");
-
+    if((botChannel === null) || msg.channel != botChannel){
+      msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+    }else{
+      msg.reply("https://github.com/SakiiCode/helyi-torpe/blob/master/server.js");
+    }
   }/*else if(msg.content.substring(0,5) == ".test"){
     getJams();
   }*/
