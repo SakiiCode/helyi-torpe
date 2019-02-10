@@ -27,7 +27,6 @@ const port = process.env.PORT || 3000
 const attributes = {fill: 'black'};
 const options = {x: 0, y: 0, fontSize: 48, anchor: 'top', attributes: attributes};
 
-const splitChars = [ ' ', '-', '\t' ];
 const letterWidthPixels = 28;
 const letterHeightPx = 65;
 const pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
@@ -325,7 +324,7 @@ client.on("guildMemberAdd", (member) => {
 
 function WordWrap(str, width){
     splitChars = [ ' ', '-', '\t' ];
-newLine='\n';
+	newLine='\n';
     words = str.split(' ');
 		//words= Explode(str, splitChars);
 
