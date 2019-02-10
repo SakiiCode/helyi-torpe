@@ -168,7 +168,7 @@ client.on('message', msg => {
 							.catch(err3 => { console.error("Text overlay error: " + err3); msg.channel.stopTyping();});
 
 						}, data2).then(function(total) {
-							msg.channel.send(msg.author,{files:[total]});
+							msg.channel.send(msg.author+" által",{files:[total]});
               msg.channel.stopTyping();
 							mesg.delete().catch(err => {console.error(err.message);});
 						});
