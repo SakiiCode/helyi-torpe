@@ -7,30 +7,30 @@ const TextToSVG = require('text-to-svg');
 const textToSVG = TextToSVG.loadSync('Anonymous_Pro.ttf');
 
 
-const { convert } = require('convert-svg-to-png');
+const convert = require('convert-svg-to-png').convert;
 
-var wrap = require('word-wrap');
+const wrap = require('word-wrap');
 
-var sizeOf = require('buffer-image-size');
+const sizeOf = require('buffer-image-size');
 
-var Promise = require("bluebird");
+const Promise = require("bluebird");
 
-var CronJob = require('cron').CronJob;
+const CronJob = require('cron').CronJob;
 
 const request = require('request');
 
-let date = require('date-and-time');
+const date = require('date-and-time');
 
 
-var port = process.env.PORT || 3000
+const port = process.env.PORT || 3000
 
 const attributes = {fill: 'black'};
 const options = {x: 0, y: 0, fontSize: 48, anchor: 'top', attributes: attributes};
 
-var splitChars = [ ' ', '-', '\t' ];
-var letterWidthPixels = 28;
-var letterHeightPx = 65;
-var pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
+const splitChars = [ ' ', '-', '\t' ];
+const letterWidthPixels = 28;
+const letterHeightPx = 65;
+const pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
 
 const job = new CronJob('0 20 13 * * 1,5,6', function() {
   getJams(processJams);
@@ -215,8 +215,7 @@ client.on('message', msg => {
       );
     }
 
-  }else if(msg.content == 'xd' || msg.content == 'Xd' || msg.content == 'xD' || msg.content == 'XD' ||
-	  msg.content == 'xdd' || msg.content == 'Xdd' || msg.content == 'xDD' || msg.content == 'XDD'){
+  }else if(msg.content.toUpperCase() == 'XD'){
   	  msg.channel.send({
   		  files: [{
   			attachment: 'xd.gif',
