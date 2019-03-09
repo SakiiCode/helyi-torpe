@@ -1,36 +1,22 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
-
 const sharp = require('sharp');
-
 const TextToSVG = require('text-to-svg');
 const textToSVG = TextToSVG.loadSync('Anonymous_Pro.ttf');
-
-
 const convert = require('convert-svg-to-png').convert;
-
 const wrap = require('word-wrap');
-
 const sizeOf = require('buffer-image-size');
-
 const Promise = require("bluebird");
-
 const CronJob = require('cron').CronJob;
-
 const request = require('request');
-
 const date = require('date-and-time');
-
-
 const port = process.env.PORT || 3000
-
 const attributes = {fill: 'black'};
 const options = {x: 0, y: 0, fontSize: 48, anchor: 'top', attributes: attributes};
-
 const letterWidthPixels = 28;
 const letterHeightPx = 65;
 const pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
-
+var dg = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 const job = new CronJob('0 20 13 * * 1,5,6', function() {
   getJams(processJams);
 }, null, true, 'Europe/Budapest');
@@ -43,24 +29,24 @@ client.on('ready', () => {
 });
 
 client.on('message', msg => {
-  botChannel=null;
-  if(msg.guild !== null){
-    botChannel = msg.guild.channels.get('442082649700302848');
-  }
+	botChannel=null;
+	if(msg.guild !== null){
+	botChannel = msg.guild.channels.get('442082649700302848');
+	}
 
-  if (msg.content.substring(0,5) == '.meme' && msg.content.length>6) {
-    msg.channel.startTyping();
-    msg.channel.fetchMessages({ limit: 20 })
+	if (msg.content.substring(0,5) == '.meme' && msg.content.length>6) {
+	msg.channel.startTyping();
+	msg.channel.fetchMessages({ limit: 20 })
 		.then(messages =>
 		{
 
 			mesgs = messages.filter(m => (m.attachments.size > 0)).filter(m => m.author.id === msg.author.id);
 
 			mesg = mesgs.first();
-      if(mesg == undefined){
-        msg.channel.stopTyping();
-        return;
-      }
+	  if(mesg == undefined){
+	    msg.channel.stopTyping();
+	    return;
+	  }
 			url = mesg.attachments.first().url;
 
 
@@ -119,7 +105,7 @@ client.on('message', msg => {
 			request.get(url, function (err, res, body) {
 				if(err){
 					console.error("Download error:" + err);
-          msg.channel.stopTyping();
+	      msg.channel.stopTyping();
 				}
 				sharp(body)
 					.resize({width:destw, height:desth, fit: 'inside'})
@@ -143,7 +129,7 @@ client.on('message', msg => {
 					.toBuffer((err2, data2, info2) => {
 						if(err2){
 							console.error("Image overlay error: " + err2);
-              msg.channel.stopTyping();
+	          msg.channel.stopTyping();
 							return;
 						}
 						currentLine=0;
@@ -169,7 +155,7 @@ client.on('message', msg => {
 
 						}, data2).then(function(total) {
 							msg.channel.send(msg.author+" által",{files:[total]});
-              msg.channel.stopTyping();
+	          				msg.channel.stopTyping();
 							mesg.delete().catch(err => {console.error(err.message);});
 						});
 
@@ -195,113 +181,171 @@ client.on('message', msg => {
 
 	)
 	.catch(err => {console.error(err);msg.channel.stopTyping();});
-  }else if(msg.content.substring(0,5) == '.help'){
+	}else if(msg.content.substring(0,5) == '.help'){
 
-    if((botChannel === null) || msg.channel != botChannel){
-      msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
-    }else{
-      //msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe parancsai",description:"```"+
-      msg.channel.send("**A Helyi Törpe parancsai**\n```"+
-      "#bot-spam\n"+
-      "   .help                          parancsok\n"+
-      "   .roles                         szerep-címkék listája\n"+
-      "   .iam <szerep>                  szerep-címke felvevése\n"+
-      "   .source                        a Helyi Törpe forráskódja\n"+
-      "bárhol\n"+
-      "   .meme <szöveg>                 legutóbbi képedhez felirat\n"+
-      "   .poll <kérdés,válasz1,...>     szavazás\n"+
-      "   xd                             xd```"
-      );
-    }
+		if((botChannel === null) || msg.channel != botChannel){
+		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		}else{
+		  //msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe parancsai",description:"```"+
+		  msg.channel.send("**A Helyi Törpe parancsai**\n```"+
+		  "#bot-spam\n"+
+		  "   .help                          parancsok\n"+
+		  "   .roles                         szerep-címkék listája\n"+
+		  "   .iam <szerep>                  szerep-címke felvevése\n"+
+		  "   .source                        a Helyi Törpe forráskódja\n"+
+		  "   .minesweeper                   aknakereső\n"+
+		  "bárhol\n"+
+		  "   .meme <szöveg>                 legutóbbi képedhez felirat\n"+
+		  "   .poll <kérdés,válasz1,...>     szavazás\n"+
+		  "   xd                             xd```"
+		  );
+		}
 
-  }else if(msg.content.toUpperCase() == 'XD'){
-  	  msg.channel.send({
-  		  files: [{
-  			attachment: 'xd.gif',
-  			name: 'xd.gif'
-  		  }]
-  		})
-  	  .catch(console.error);
-  }else if(msg.content.substring(0,4) == ".iam"){
-    if((botChannel === null) || msg.channel != botChannel){
-      msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
-    }else{
-      role = msg.content.split(' ')[1];
-      if(role == "tesztelo"){
-        msg.member.addRole('539878542586937377');
-        msg.reply('mostantól tesztelő vagy!');
-      }else if(role == "producer"){
-        msg.member.addRole('460488813525991438');
-        msg.reply('mostantól producer vagy!');
-      }else if(role == "hang"){
-        msg.member.addRole('460185178443087874');
-        msg.reply('mostantól hangmérnök vagy!');
-      }else if(role == "kod"){
-        msg.member.addRole('460185211230224395');
-        msg.reply('mostantól programozó vagy!');
-      }else if(role == "grafikus"){
-        msg.member.addRole('460185260848840705');
-        msg.reply('mostantól grafikus vagy!');
-      }else if(role == "palya"){
-        msg.member.addRole('460185260244729877');
-        msg.reply('mostantól pályatervező vagy!');
-      }else if(role == "jammer"){
-        msg.member.addRole('539878964248838181');
-        msg.reply('mostantól jammer vagy!');
-      }else if(role == "youtuber"){
-        msg.member.addRole('539878321551573002');
-        msg.reply('mostantól YouTuber vagy!');
-      }else{
-        msg.reply(' érvénytelen szerepkör!')
-      }
-    }
-  }else if(msg.content.substring(0,4) == ".msg" && msg.author.id=="217267395696263169"){
-    msg.channel.send(msg.content.substring(5));
-    msg.delete();
-  }else if(msg.content.substring(0,6) == ".roles"){
-    if((botChannel === null) || msg.channel != botChannel){
-      msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
-    }else{
-      msg.reply(
-        "válassz szerepet:\n"+
-        "**.iam tesztelo** - Tesztelő\n"+
-        "**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
-        "**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
-        "**.iam kod** - Programozó\n"+
-        "**.iam grafikus** - 2D/3D Grafikus\n"+
-        "**.iam palya** - Pályatervező\n"+
-        "**.iam youtuber** - YouTuber/Streamer"+
-        "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n");
-      }
-
-
-  }else if(msg.content.substring(0,5) == ".poll"){
-    attr = msg.content.substring(6).split(",");
-    reply = "@here __szavazás: **"+attr[0]+"**__\n";
-    answers = Math.min(attr.length-1,11);
-    for(i=0;i<answers;i++){
-      reply += pollChars[i]+":"+attr[i+1]+"\n";
-    }
-
-    msg.channel.send(reply)
-    .then(message => {
-      chs = pollChars.slice(0,answers);
-      //console.log(chs);
-      Promise.reduce(chs, function (total, ch) {
-        return message.react(ch).then(reaction => {return reaction});
-
-      },chs[0]);
+	}else if(msg.content.toUpperCase() == 'XD'){
+		  msg.channel.send({
+			  files: [{
+				attachment: 'xd.gif',
+				name: 'xd.gif'
+			  }]
+			})
+		  .catch(console.error);
+	}else if(msg.content.substring(0,4) == ".iam"){
+		if((botChannel === null) || msg.channel != botChannel){
+		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		}else{
+		  role = msg.content.split(' ')[1];
+		  if(role == "tesztelo"){
+		    msg.member.addRole('539878542586937377');
+		    msg.reply('mostantól tesztelő vagy!');
+		  }else if(role == "producer"){
+		    msg.member.addRole('460488813525991438');
+		    msg.reply('mostantól producer vagy!');
+		  }else if(role == "hang"){
+		    msg.member.addRole('460185178443087874');
+		    msg.reply('mostantól hangmérnök vagy!');
+		  }else if(role == "kod"){
+		    msg.member.addRole('460185211230224395');
+		    msg.reply('mostantól programozó vagy!');
+		  }else if(role == "grafikus"){
+		    msg.member.addRole('460185260848840705');
+		    msg.reply('mostantól grafikus vagy!');
+		  }else if(role == "palya"){
+		    msg.member.addRole('460185260244729877');
+		    msg.reply('mostantól pályatervező vagy!');
+		  }else if(role == "jammer"){
+		    msg.member.addRole('539878964248838181');
+		    msg.reply('mostantól jammer vagy!');
+		  }else if(role == "youtuber"){
+		    msg.member.addRole('539878321551573002');
+		    msg.reply('mostantól YouTuber vagy!');
+		  }else{
+		    msg.reply(' érvénytelen szerepkör!')
+		  }
+		}
+	}else if(msg.content.substring(0,4) == ".msg" && msg.author.id=="217267395696263169"){
+		msg.channel.send(msg.content.substring(5));
+		msg.delete();
+	}else if(msg.content.substring(0,6) == ".roles"){
+		if((botChannel === null) || msg.channel != botChannel){
+		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		}else{
+		  msg.reply(
+		    "válassz szerepet:\n"+
+		    "**.iam tesztelo** - Tesztelő\n"+
+		    "**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
+		    "**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
+		    "**.iam kod** - Programozó\n"+
+		    "**.iam grafikus** - 2D/3D Grafikus\n"+
+		    "**.iam palya** - Pályatervező\n"+
+		    "**.iam youtuber** - YouTuber/Streamer"+
+		    "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n");
+		  }
 
 
-    });
+	}else if(msg.content.substring(0,5) == ".poll"){
+		attr = msg.content.substring(6).split(",");
+		reply = "@here __szavazás: **"+attr[0]+"**__\n";
+		answers = Math.min(attr.length-1,11);
+		for(i=0;i<answers;i++){
+		  reply += pollChars[i]+":"+attr[i+1]+"\n";
+		}
 
-  }else if(msg.content.substring(0,7) == ".source"){
-    if((botChannel === null) || msg.channel != botChannel){
-      msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
-    }else{
-      msg.reply("https://github.com/SakiiCode/helyi-torpe/blob/master/server.js");
-    }
-  }/*else if(msg.content.substring(0,5) == ".test"){
+		msg.channel.send(reply)
+		.then(message => {
+		  chs = pollChars.slice(0,answers);
+		  //console.log(chs);
+		  Promise.reduce(chs, function (total, ch) {
+		    return message.react(ch).then(reaction => {return reaction});
+
+		  },chs[0]);
+
+
+		});
+
+	}else if(msg.content.substring(0,7) == ".source"){
+		if((botChannel === null) || msg.channel != botChannel){
+		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		}else{
+		  msg.reply("https://github.com/SakiiCode/helyi-torpe/blob/master/server.js");
+		}
+	}else if(msg.content.substring(0,12) == ".minesweeper"){
+		if((botChannel === null) || msg.channel != botChannel){
+		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		}else{
+			msg.channel.startTyping();
+			mineCount = 18;
+			mapSize=10;
+
+			map = [];
+			for(x=0;x<mapSize;x++){
+				map[x]=[]
+				for(y=0;y<mapSize;y++){
+					map[x][y]=0;
+				}
+			}
+
+			for(i=0;i<mineCount;i++){
+				do{
+					x=Math.floor(Math.random() * mapSize);
+					y=Math.floor(Math.random() * mapSize);
+				}while(map[x][y]==9);
+
+				map[x][y]=9;
+
+				for(j=-1;j<=1;j++){
+					for(k=-1;k<=1;k++){
+						if(x+j>-1 && x+j<mapSize && y+k>-1 && y+k<mapSize && (map[x+j][y+k] != 9)){
+							map[x+j][y+k] +=1;
+						}
+					}
+				}
+				/*for(a=0;a<mapSize;a++){
+					txt="";
+					for(b=0;b<mapSize;b++){
+						txt +=map[a][b]+",";
+					}
+					console.log(txt);
+				}
+				console.log("------------------------");*/
+			}
+			txt="";
+			for(i=0;i<mapSize;i++){
+
+				for(j=0;j<mapSize;j++){
+					if(map[i][j] != 9){
+						txt +="||:"+dg[map[i][j]]+":||";
+					}else{
+						txt +="||:boom:||";
+					}
+				}
+				txt+="\n";
+
+			}
+			//console.log(txt);
+			msg.channel.send(txt);
+			msg.channel.stopTyping();
+		}
+	}/*else if(msg.content.substring(0,5) == ".test"){
     getJams();
   }*/
 
