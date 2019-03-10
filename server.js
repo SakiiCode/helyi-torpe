@@ -333,9 +333,9 @@ client.on('message', msg => {
 
 				for(j=0;j<mapSize;j++){
 					if(map[i][j] != 9){
-						txt +="||:"+dg[map[i][j]]+":||";
+						txt +="||  :"+dg[map[i][j]]+":  ||  ";
 					}else{
-						txt +="||:boom:||";
+						txt +="||  :boom:  ||  ";
 					}
 				}
 				txt+="\n";
