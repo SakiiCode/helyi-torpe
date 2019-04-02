@@ -112,7 +112,7 @@ client.on('message', msg => {
 					.toBuffer((err, data, info) => {
 
 					console.log("Pic:"+info.width+","+info.height);
-					console.log("Pos:"+(bigw/2-info.width/2)+","+imgy);
+					console.log("Pos:"+(bigw/2-Math.ceil(info.width/2))+","+imgy);
 					sharp({
 						create: {
 							width: bigw,
@@ -123,7 +123,7 @@ client.on('message', msg => {
 					})
 					.overlayWith(data,{
 							top:imgy+((bigh-imgy)/2-info.height/2),
-							left:(bigw/2-info.width/2)
+							left:(bigw/2-Math.ceil(info.width/2))
 						})
 					.png()
 					.toBuffer((err2, data2, info2) => {
