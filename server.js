@@ -12,9 +12,9 @@ const request = require('request');
 const date = require('date-and-time');
 const port = process.env.PORT || 3000
 const attributes = {fill: 'black'};
-const options = {x: 0, y: 0, fontSize: 48, anchor: 'top', attributes: attributes};
-const letterWidthPixels = 28;
-const letterHeightPx = 65;
+const options = {x: 0, y: 0, fontSize: 40, anchor: 'top', attributes: attributes};
+const letterWidthPixels = 25;
+const letterHeightPx = 60;
 const pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
 var dg = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 const job = new CronJob('0 20 13 * * 1,5,6', function() {
@@ -57,7 +57,7 @@ client.on('message', msg => {
 
 
 
-			bigw=700;
+			bigw=1000;
 
 
 
@@ -156,7 +156,7 @@ client.on('message', msg => {
 						}, data2).then(function(total) {
 							msg.channel.send(msg.author+" által",{files:[total]});
 	          				msg.channel.stopTyping();
-							mesg.delete().catch(err => {console.error(err.message);});
+							//mesg.delete().catch(err => {console.error(err.message);});
 						});
 
 						/*svgs.reduce(async (previousPromise, nextID) => {
