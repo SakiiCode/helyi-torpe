@@ -105,7 +105,7 @@ client.on('message', msg => {
 			request.get(url, function (err, res, body) {
 				if(err){
 					console.error("Download error:" + err);
-	      msg.channel.stopTyping();
+					msg.channel.stopTyping();
 				}
 				sharp(body)
 					.resize({width:destw, height:desth, fit: 'inside'})
@@ -129,19 +129,26 @@ client.on('message', msg => {
 					.toBuffer((err2, data2, info2) => {
 						if(err2){
 							console.error("Image overlay error: " + err2);
-	          msg.channel.stopTyping();
+	          				msg.channel.stopTyping();
 							return;
 						}
 						currentLine=0;
 						Promise.reduce(svgs, async function(total, svg) {
-							s2i = await convert(svg, {
-								puppeteer: {
-									args: ['--no-sandbox', '--disable-setuid-sandbox']
-								}
-							});
+							try {
+								s2i = await convert(svg, {
+									puppeteer: {
+										args: ['--no-sandbox', '--disable-setuid-sandbox']
+									}
+								});
 
-							dimensions = sizeOf(s2i);
-							console.log(dimensions.width, dimensions.height);
+								dimensions = sizeOf(s2i);
+								console.log(dimensions.width, dimensions.height);
+							 } catch (error) {
+							   console.error(error);
+							   currentLine++;
+							   return total;
+							 }
+
 
 							return sharp(total)
 							.overlayWith(s2i,{
@@ -345,6 +352,9 @@ client.on('message', msg => {
 			msg.channel.send(txt);
 			msg.channel.stopTyping();
 		}
+	}else if(msg.content.substring(0,5) == ".stop"){
+    	msg.channel.stopTyping();
+		msg.delete();
 	}/*else if(msg.content.substring(0,5) == ".test"){
     getJams();
   }*/
