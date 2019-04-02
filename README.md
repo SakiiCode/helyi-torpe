@@ -12,7 +12,7 @@ https://discordapp.com/api/oauth2/authorize?client_id=460161259191402498&permiss
    .roles                         szerep-címkék listája
    .iam <szerep>                  szerep-címke felvevése
    .source                        a Helyi Törpe forráskódja
-
+   .minesweeper                   aknakereső
 bárhol
    .meme <szöveg>                 legutóbbi képedhez felirat
    .poll <kérdés,válasz1,...>     szavazás
