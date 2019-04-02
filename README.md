@@ -5,6 +5,7 @@ Ha meg akarod hívni:
 
 https://discordapp.com/api/oauth2/authorize?client_id=460161259191402498&permissions=0&scope=bot
 
+
 ```
 #bot-spam
    .help                          parancsok
@@ -17,3 +18,6 @@ bárhol
    .poll <kérdés,válasz1,...>     szavazás
    xd                             xd
 ```
+
+Ha csatlakozni akarsz:
+https://discord.gg/sYPyEKY
