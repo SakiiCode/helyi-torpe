@@ -18,7 +18,7 @@ const letterHeightPx = 60;
 const pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
 var dg = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 const job = new CronJob('0 20 13 * * 1,5,6', function() {
-  getJams(processJams);
+   getJams(processJams);
 }, null, true, 'Europe/Budapest');
 
 client.on('ready', () => {
@@ -197,8 +197,8 @@ client.on('message', msg => {
 		  msg.channel.send("**A Helyi Törpe parancsai**\n```"+
 		  "#bot-spam\n"+
 		  "   .help                          parancsok\n"+
-		  "   .roles                         szerep-címkék listája\n"+
-		  "   .iam <szerep>                  szerep-címke felvevése\n"+
+		  "   .roles                         role-ok listája\n"+
+		  "   .iam <szerep>                  role fel/levétele\n"+
 		  "   .source                        a Helyi Törpe forráskódja\n"+
 		  "   .minesweeper                   aknakereső\n"+
 		  "bárhol\n"+
@@ -220,34 +220,43 @@ client.on('message', msg => {
 		if((botChannel === null) || msg.channel != botChannel){
 		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
 		}else{
-		  role = msg.content.split(' ')[1];
-		  if(role == "tesztelo"){
-		    msg.member.addRole('539878542586937377');
-		    msg.reply('mostantól tesztelő vagy!');
-		  }else if(role == "producer"){
-		    msg.member.addRole('460488813525991438');
-		    msg.reply('mostantól producer vagy!');
-		  }else if(role == "hang"){
-		    msg.member.addRole('460185178443087874');
-		    msg.reply('mostantól hangmérnök vagy!');
-		  }else if(role == "kod"){
-		    msg.member.addRole('460185211230224395');
-		    msg.reply('mostantól programozó vagy!');
-		  }else if(role == "grafikus"){
-		    msg.member.addRole('460185260848840705');
-		    msg.reply('mostantól grafikus vagy!');
-		  }else if(role == "palya"){
-		    msg.member.addRole('460185260244729877');
-		    msg.reply('mostantól pályatervező vagy!');
-		  }else if(role == "jammer"){
-		    msg.member.addRole('539878964248838181');
-		    msg.reply('mostantól jammer vagy!');
-		  }else if(role == "youtuber"){
-		    msg.member.addRole('539878321551573002');
-		    msg.reply('mostantól YouTuber vagy!');
+		  roleName = msg.content.split(' ')[1];
+      if(roleName == "tesztelo"){
+        id = '539878542586937377';
+        name="tesztelő";
+      }else if(roleName == "producer"){
+        id='460488813525991438';
+        name = "producer";
+		  }else if(roleName == "hang"){
+        id='460185178443087874';
+        name = "hangmérnök";
+		  }else if(roleName == "kod"){
+        id='460185211230224395';
+        name = "programozó";
+		  }else if(roleName == "grafikus"){
+        id='460185260848840705';
+        name="grafikus";
+		  }else if(roleName == "palya"){
+        id='460185260244729877';
+        name="pályatervező";
+		  }else if(roleName == "jammer"){
+        id='539878964248838181';
+        name="jammer";
+      }else if(roleName == "youtuber"){
+        id='539878321551573002';
+        name="YouTuber";
 		  }else{
-		    msg.reply(' érvénytelen szerepkör!')
+		    msg.reply(' érvénytelen role!');
+        return;
 		  }
+      if(!msg.member.roles.has(id)){
+        msg.member.addRole(id);
+        msg.reply('mostantól '+name+' vagy!');
+      }else{
+        msg.member.removeRole(id);
+        msg.reply('már nem vagy '+name+'!');
+      }
+
 		}
 	}else if(msg.content.substring(0,4) == ".msg" && msg.author.id=="217267395696263169"){
 		msg.channel.send(msg.content.substring(5));
