@@ -380,7 +380,7 @@ client.on("guildMemberAdd", (member) => {
     "**.iam kod** - Programozó\n"+
     "**.iam grafikus** - 2D/3D Grafikus\n"+
     "**.iam palya** - Pályatervező\n"+
-    "**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n"+
+    "**.iam jammer** - Értesítést kapsz az itch.io-s és gamejolt-os game jam-ekről minden hétfőn, pénteken és szombaton\n"+
     "**.iam youtuber** - YouTuber/Streamer\n"+
     "**Kérlek olvasd el a "+member.guild.channels.get("442084233767419916")+" csatornát is!**");
 });
