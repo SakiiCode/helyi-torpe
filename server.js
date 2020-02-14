@@ -364,9 +364,15 @@ client.on('message', msg => {
 	}else if(msg.content.substring(0,5) == ".stop"){
     	msg.channel.stopTyping();
 		msg.delete();
-	}/*else if(msg.content.substring(0,5) == ".test"){
-    getJams();
-  }*/
+	}else if(msg.content.substring(0,6) == ".clear" && msg.author.id=="217267395696263169"){
+    amount = msg.content.split(' ')[1];
+    if(amount !== undefined){
+      msg.channel.fetchMessages({ limit: amount })
+      .then(messages => messages.forEach(message => message.delete()))
+        .catch(console.error);
+    }
+  }
+
 
 });
 
