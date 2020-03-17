@@ -31,7 +31,7 @@ client.on('ready', () => {
 client.on('message', msg => {
 	botChannel=null;
 	if(msg.guild !== null){
-	botChannel = msg.guild.channels.get('442082649700302848');
+		botChannel = msg.guild.channels.resolve('442082649700302848');
 	}
 
 	if (msg.content.substring(0,5) == '.meme' && msg.content.length>6) {
@@ -365,20 +365,23 @@ client.on('message', msg => {
     	msg.channel.stopTyping();
 		msg.delete();
 	}else if(msg.content.substring(0,6) == ".clear" && msg.author.id=="217267395696263169"){
-    amount = msg.content.split(' ')[1];
-    if(amount !== undefined){
-      msg.channel.fetchMessages({ limit: amount })
-      .then(messages => messages.forEach(message => message.delete()))
-        .catch(console.error);
-    }
-  }
+		amount = msg.content.split(' ')[1];
+		if(amount !== undefined){
+		msg.channel.fetchMessages({ limit: amount })
+		.then(messages => messages.forEach(message => message.delete()))
+			.catch(console.error);
+    	}
+	}else if(msg.content.substring(0,5) == ".jams" && msg.author.id=="217267395696263169"){
+		getJams(processJams);
+
+	}
 
 
 });
 
 client.on("guildMemberAdd", (member) => {
   console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
-  member.guild.channels.get("442082649700302848").send(
+  member.guild.channels.resolve("442082649700302848").send(
     "Üdvözlünk " + member.user + " a " + member.guild.name + " szerveren, választhatsz szerepet:\n"+
     "**.iam tesztelo** - Tesztelő\n"+
     "**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
@@ -388,7 +391,7 @@ client.on("guildMemberAdd", (member) => {
     "**.iam palya** - Pályatervező\n"+
     "**.iam jammer** - Értesítést kapsz az itch.io-s és gamejolt-os game jam-ekről minden hétfőn, pénteken és szombaton\n"+
     "**.iam youtuber** - YouTuber/Streamer\n"+
-    "**Kérlek olvasd el a "+member.guild.channels.get("442084233767419916")+" csatornát is!**");
+    "**Kérlek olvasd el a "+member.guild.channels.resolve("442084233767419916")+" csatornát is!**");
 });
 
 function WordWrap(str, width){
@@ -444,51 +447,57 @@ function WordWrap(str, width){
 }
 
 function getJams(callback){
-  request('http://www.indiegamejams.com/calfeed/index.php', { json: true }, (err, res, body) => {
-    if (err) { return console.log(err); }
-    jams = [];
-    for(i=0;i<body.length;i++){
-      jam = body[i];
+	console.log("Retrieving game jams...");
+	request('http://www.indiegamejams.com/calfeed/index.php', { json: true }, (err, res, body) => {
+		if (err) { return console.log(err); }
+		console.log("Done");
+		jams = [];
+		for(i=0;i<body.length;i++){
+			jam = body[i];
 
-      //console.log(jam.summary);
-      //20190301T050000Z
-      if(jam.dtstart != undefined){
-        startdate = date.addHours(date.parse(jam.dtstart, 'YYYYMMDDThhmmssZ'),1);
-        //console.log(startdate);
-        jam2 = {name:jam.summary,url:jam.description.split('\n')[0], start:startdate};
-        jams.push(jam2);
-        //console.log(jam2);
-      }
-    }
+			console.log(jam.summary);
+			//20190301T050000Z
+			if(jam.dtstart != undefined){
+				startdate = date.addHours(date.parse(jam.dtstart, 'YYYYMMDD hhmmss '),1);
+				console.log(startdate);
+				jam2 = {
+					name:jam.summary,
+					url:jam.description.split('\n')[0],
+					start:startdate};
+				jams.push(jam2);
+				console.log(jam2);
+			}
+		}
 
 
-    jams.sort(function(a,b){
-      // Turn your strings into dates, and then subtract them
-      // to get a value that is either negative, positive, or zero.
-      sum = date.subtract(a.start, b.start).toSeconds();
-      //console.log(sum);
-      return sum;
-    });
-    currentjams = jams.filter((jam)=>{
-      return date.subtract(jam.start,new Date()).toSeconds() >0;
+		jams.sort(function(a,b){
+			// Turn your strings into dates, and then subtract them
+			// to get a value that is either negative, positive, or zero.
+			sum = date.subtract(a.start, b.start).toSeconds();
+			console.log(sum);
+			return sum;
+		});
 
-    });
-    //console.log(currentjams);
-    callback(currentjams.slice(0,5));
-  });
+		currentjams = jams.filter((jam)=>{
+			return date.subtract(jam.start,new Date()).toSeconds() >0;
+
+		});
+		console.log(currentjams);
+		callback(currentjams.slice(0,5));
+	});
 }
 
 function processJams(jams){
 
-  guild = client.guilds.get('248820876814843904');
-  jammer = guild.roles.get('539878964248838181');
+  guild = client.guilds.resolve('248820876814843904');
+  jammer = guild.roles.resolve('539878964248838181');
   reply=jammer + "ek, ezeken tudtok részt venni a következő néhány napon:\n";
   for(i=0;i<jams.length;i++){
     jam = jams[i];
     reply += jam.name+"  ("+date.format(jam.start, 'MMM. DD. HH:mm')+"-tól)\n";
     reply += "    <"+jam.url+">\n";
   }
-  channel = guild.channels.get('442082917049565214').send(reply);
+  channel = guild.channels.resolve('442082917049565214').send(reply);
 
 
 
