@@ -36,17 +36,16 @@ client.on('message', msg => {
 
 	if (msg.content.substring(0,5) == '.meme' && msg.content.length>6) {
 	msg.channel.startTyping();
-	msg.channel.fetchMessages({ limit: 20 })
-		.then(messages =>
-		{
+		msg.channel.messages.fetch({ limit: 20 })
+		.then(messages =>{
 
 			mesgs = messages.filter(m => (m.attachments.size > 0)).filter(m => m.author.id === msg.author.id);
 
 			mesg = mesgs.first();
-	  if(mesg == undefined){
-	    msg.channel.stopTyping();
-	    return;
-	  }
+			if(mesg == undefined){
+				msg.channel.stopTyping();
+				return;
+			}
 			url = mesg.attachments.first().url;
 
 
@@ -102,6 +101,7 @@ client.on('message', msg => {
 
 
 			var request = require('request').defaults({ encoding: null });
+			//TODO ezt 1 db pipelineba
 			request.get(url, function (err, res, body) {
 				if(err){
 					console.error("Download error:" + err);
@@ -121,10 +121,11 @@ client.on('message', msg => {
 							background: { r: 255, g: 255, b: 255, alpha: 1 }
 						}
 					})
-					.overlayWith(data,{
-							top:imgy+((bigh-imgy)/2-info.height/2),
-							left:(bigw/2-Math.ceil(info.width/2))
-						})
+					.composite([{
+						input:data,
+						top:imgy+((bigh-imgy)/2-info.height/2),
+						left:(bigw/2-Math.ceil(info.width/2))
+					}])
 					.png()
 					.toBuffer((err2, data2, info2) => {
 						if(err2){
@@ -151,17 +152,17 @@ client.on('message', msg => {
 
 
 							return sharp(total)
-							.overlayWith(s2i,{
+							.composite([{input:s2i,
 								top:txtpadding+currentLine*letterHeightPx,
 								left:txtpadding
-							})
+							}])
 							.png()
 							.toBuffer()
 							.then((data3) => { currentLine++; return data3; })
 							.catch(err3 => { console.error("Text overlay error: " + err3); msg.channel.stopTyping();});
 
 						}, data2).then(function(total) {
-							msg.channel.send(msg.author+" által",{files:[total]});
+							msg.channel.send(msg.author.toString()+" által",{files:[total]});
 	          				msg.channel.stopTyping();
 							//mesg.delete().catch(err => {console.error(err.message);});
 						});
@@ -191,7 +192,7 @@ client.on('message', msg => {
 	}else if(msg.content.substring(0,5) == '.help'){
 
 		if((botChannel === null) || msg.channel != botChannel){
-		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		  msg.reply('kérlek a '+botChannel.toString()+' szobában használd ezt a parancsot!');
 		}else{
 		  //msg.channel.send(new Discord.RichEmbed({title:"A Helyi Törpe parancsai",description:"```"+
 		  msg.channel.send("**A Helyi Törpe parancsai**\n```"+
@@ -218,7 +219,7 @@ client.on('message', msg => {
 		  .catch(console.error);
 	}else if(msg.content.substring(0,4) == ".iam"){
 		if((botChannel === null) || msg.channel != botChannel){
-		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		  msg.reply('kérlek a '+botChannel.toString()+' szobában használd ezt a parancsot!');
 		}else{
 		  roleName = msg.content.split(' ')[1];
       if(roleName == "tesztelo"){
@@ -263,7 +264,7 @@ client.on('message', msg => {
 		msg.delete();
 	}else if(msg.content.substring(0,6) == ".roles"){
 		if((botChannel === null) || msg.channel != botChannel){
-		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		  msg.reply('kérlek a '+botChannel.toString()+' szobában használd ezt a parancsot!');
 		}else{
 		  msg.reply(
 		    "válassz szerepet:\n"+
@@ -300,13 +301,13 @@ client.on('message', msg => {
 
 	}else if(msg.content.substring(0,7) == ".source"){
 		if((botChannel === null) || msg.channel != botChannel){
-		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		  msg.reply('kérlek a '+botChannel.toString()+' szobában használd ezt a parancsot!');
 		}else{
 		  msg.reply("https://github.com/SakiiCode/helyi-torpe/blob/master/server.js");
 		}
 	}else if(msg.content.substring(0,12) == ".minesweeper"){
 		if((botChannel === null) || msg.channel != botChannel){
-		  msg.reply('kérlek a '+botChannel+' szobában használd ezt a parancsot!');
+		  msg.reply('kérlek a '+botChannel.toString()+' szobában használd ezt a parancsot!');
 		}else{
 			msg.channel.startTyping();
 			mineCount = 18;
@@ -365,12 +366,14 @@ client.on('message', msg => {
     	msg.channel.stopTyping();
 		msg.delete();
 	}else if(msg.content.substring(0,6) == ".clear" && msg.author.id=="217267395696263169"){
-		amount = msg.content.split(' ')[1];
-		if(amount !== undefined){
-		msg.channel.fetchMessages({ limit: amount })
-		.then(messages => messages.forEach(message => message.delete()))
-			.catch(console.error);
-    	}
+		msg.delete().then(()=>{
+			amount = msg.content.split(' ')[1];
+			if(amount !== undefined){
+				msg.channel.bulkDelete(amount).catch(console.error);
+			}
+		});
+		
+    	
 	}else if(msg.content.substring(0,5) == ".jams" && msg.author.id=="217267395696263169"){
 		getJams(processJams);
 
@@ -455,17 +458,17 @@ function getJams(callback){
 		for(i=0;i<body.length;i++){
 			jam = body[i];
 
-			console.log(jam.summary);
+			//console.log(jam.summary);
 			//20190301T050000Z
 			if(jam.dtstart != undefined){
 				startdate = date.addHours(date.parse(jam.dtstart, 'YYYYMMDD hhmmss '),1);
-				console.log(startdate);
+				//console.log(startdate);
 				jam2 = {
 					name:jam.summary,
 					url:jam.description.split('\n')[0],
 					start:startdate};
 				jams.push(jam2);
-				console.log(jam2);
+				//console.log(jam2);
 			}
 		}
 
@@ -474,7 +477,7 @@ function getJams(callback){
 			// Turn your strings into dates, and then subtract them
 			// to get a value that is either negative, positive, or zero.
 			sum = date.subtract(a.start, b.start).toSeconds();
-			console.log(sum);
+			//console.log(sum);
 			return sum;
 		});
 
@@ -482,7 +485,7 @@ function getJams(callback){
 			return date.subtract(jam.start,new Date()).toSeconds() >0;
 
 		});
-		console.log(currentjams);
+		//console.log(currentjams);
 		callback(currentjams.slice(0,5));
 	});
 }
@@ -491,15 +494,15 @@ function processJams(jams){
 
   guild = client.guilds.resolve('248820876814843904');
   jammer = guild.roles.resolve('539878964248838181');
-  reply=jammer + "ek, ezeken tudtok részt venni a következő néhány napon:\n";
+  jammer.toString() + "ek, ezeken tudtok részt venni a következő néhány napon:\n";
   for(i=0;i<jams.length;i++){
-    jam = jams[i];
+    var jam = jams[i];
     reply += jam.name+"  ("+date.format(jam.start, 'MMM. DD. HH:mm')+"-tól)\n";
     reply += "    <"+jam.url+">\n";
   }
-  channel = guild.channels.resolve('442082917049565214').send(reply);
-
-
+  guild.channels.resolve('442082917049565214').send(reply);
+  //console.log(jammer.toString());
+  console.log("Jam list sent");
 
 
 
