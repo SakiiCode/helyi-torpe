@@ -494,7 +494,7 @@ function processJams(jams){
 
   guild = client.guilds.resolve('248820876814843904');
   jammer = guild.roles.resolve('539878964248838181');
-  jammer.toString() + "ek, ezeken tudtok részt venni a következő néhány napon:\n";
+  var reply = jammer.toString() + "ek, ezeken tudtok részt venni a következő néhány napon:\n";
   for(i=0;i<jams.length;i++){
     var jam = jams[i];
     reply += jam.name+"  ("+date.format(jam.start, 'MMM. DD. HH:mm')+"-tól)\n";
