@@ -1,11 +1,18 @@
 # helyi-torpe
 Discord Bot a Devscord szerverre
 
-Ha meg akarod hívni:
+### Meghívó link
 
 https://discordapp.com/api/oauth2/authorize?client_id=460161259191402498&permissions=0&scope=bot
 
+### Engedélyek
 
+* Admin parancsok használatához rendelkezni kell olyan role-lal amiben benne van, hogy "mod" vagy "admin"
+
+* \#bot-spam -es parancsok azokban a csatornákban működik amelyek nevében benne van, hogy "spam" vagy "test"
+
+
+### Parancsok
 ```
 #bot-spam
    .help                          parancsok
@@ -19,5 +26,6 @@ bárhol
    xd                             xd
 ```
 
-Ha csatlakozni akarsz:
-https://discord.gg/sYPyEKY
+#### A készítő szervere
+
+Ha csatlakozni akarsz: https://discord.gg/sYPyEKY
