@@ -28,4 +28,4 @@ bárhol
 
 #### A készítő szervere
 
-Ha csatlakozni akarsz: https://discord.gg/sYPyEKY
+Ha csatlakozni akarsz: https://discord.gg/SpqeVT
