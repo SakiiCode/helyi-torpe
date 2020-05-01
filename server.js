@@ -50,11 +50,14 @@ client.on('message', msg => {
 	var command = msg.content.substring(1,msg.content.length).split(" ")[0];
 
 	var isAdmin=false;
-	var authorRoles = msg.member.roles.cache.array();
-	for(i=0;i<authorRoles.length;i++){
-		var role = authorRoles[i].name.toLowerCase();
-		if(role.includes("admin") || role.includes("mod")){
-			isAdmin=true;
+
+	if(msg.channel instanceof Discord.TextChannel){
+		var authorRoles = msg.member.roles.cache.array();
+		for(i=0;i<authorRoles.length;i++){
+			var role = authorRoles[i].name.toLowerCase();
+			if(role.includes("admin") || role.includes("mod")){
+				isAdmin=true;
+			}
 		}
 	}
 
