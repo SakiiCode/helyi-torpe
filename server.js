@@ -78,14 +78,31 @@ client.on('message', msg => {
 			msg.channel.messages.fetch({ limit: 20 })
 			.then(messages =>{
 
-				mesgs = messages.filter(m => (m.attachments.size > 0)).filter(m => m.author.id === msg.author.id);
+				mesgs = messages.filter(m => (m.attachments.size > 0)).array(); //.filter(m => m.author.id === msg.author.id)
 
-				mesg = mesgs.first();
-				if(mesg == undefined){
+				var i, url;
+				for (i = 0; i < mesgs.length; i++) {
+					if(mesgs[i] == undefined){
+						continue;
+					}
+					url = mesgs[i].attachments.last().url.toString().toLowerCase();
+					console.log("["+i+"] "+url);
+					if(!url.endsWith(".jpg") && !url.endsWith(".png")){
+
+						continue;
+					}
+
+					break;
+
+				}
+
+				if(url === undefined){
+					msg.reply("nem találtam képet");
+					console.log("No picture found for .meme");
 					msg.channel.stopTyping();
 					return;
 				}
-				url = mesg.attachments.first().url;
+
 
 
 				text=msg.content.substring(6);
