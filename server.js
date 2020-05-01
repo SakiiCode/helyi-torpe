@@ -231,7 +231,8 @@ client.on('message', msg => {
 			);
 			break;
 		case "iam":
-			roleName = msg.content.split(' ')[1];
+			var roleName = msg.content.split(' ')[1];
+			var id,name;
 			switch(roleName){
 				case "tesztelo":
 					id = '539878542586937377';
@@ -267,13 +268,14 @@ client.on('message', msg => {
 					break;
 				default:msg.reply(" érvénytelen role!");
 			}
-
-			if(!msg.member.roles.cache.get(id)){
-				msg.member.roles.add(id);
-				msg.reply('mostantól '+name+' vagy!');
-			}else{
-				msg.member.roles.remove(id);
-				msg.reply('már nem vagy '+name+'!');
+			if(id !== undefined){
+				if(!msg.member.roles.cache.get(id)){
+					msg.member.roles.add(id);
+					msg.reply('mostantól '+name+' vagy!');
+				}else{
+					msg.member.roles.remove(id);
+					msg.reply('már nem vagy '+name+'!');
+				}
 			}
 			break;
 		case "msg":
