@@ -4,8 +4,7 @@
   "description": "Discord Bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "preinstall": "npx npm-force-resolutions"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -25,8 +24,5 @@
     "sharp": "^0.25.1",
     "text-to-svg": "^3.1.5",
     "word-wrap": "^1.2.3"
-  },
-  "resolutions": {
-    "minimist": "^1.2.5"
   }
 }
