@@ -286,7 +286,7 @@ client.on('message', msg => {
 					id='539878321551573002';
 					name="YouTuber";
 					break;
-				default:msg.reply(" érvénytelen role!");
+				default:msg.reply("érvénytelen role!");
 			}
 			if(id !== undefined){
 				if(!msg.member.roles.cache.get(id)){
@@ -414,7 +414,7 @@ client.on("guildMemberAdd", (member) => {
 	console.log(`New User "${member.user.username}" has joined "${member.guild.name}"` );
 	if(member.guild.id == "248820876814843904"){
 		member.guild.channels.resolve("442082649700302848").send(
-		"Üdvözlünk " + member.user.toString() + " a " + member.guild.name + " szerveren, választhatsz szerepet:\n"+
+		"Üdvözlünk " + member.user.toString() + " a " + member.guild.name + " szerveren, választhatsz egy vagy több szerepet:\n"+
 		"**.iam tesztelo** - Tesztelő\n"+
 		"**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
 		"**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
