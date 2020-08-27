@@ -10,8 +10,7 @@ const Promise = require("bluebird");
 const CronJob = require('cron').CronJob;
 const request = require('request');
 const date = require('date-and-time');
-const got = require('got');
-const port = process.env.PORT || 3000
+const Axios = require('axios');
 const attributes = {fill: 'black'};
 const options = {x: 0, y: 0, fontSize: 40, anchor: 'top', attributes: attributes};
 const letterWidthPixels = 25;
@@ -146,7 +145,7 @@ client.on('message', async (msg) =>  {
 			console.log("DestSize:"+destw+","+desth);
 
 			try{
-				const body =await got('https://sindresorhus.com');
+				const body = Buffer.from((await Axios.get(url, {responseType:'arraybuffer'})).data,'base64');
 				const resized = await sharp(body).resize({width:destw, height:desth, fit: 'inside'}).toBuffer();
 				console.log("Pos:"+(bigw/2-Math.ceil(destw/2))+","+imgy);
 				let canvas = 
