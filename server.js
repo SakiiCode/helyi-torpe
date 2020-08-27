@@ -4,9 +4,7 @@ const sharp = require('sharp');
 const TextToSVG = require('text-to-svg');
 const textToSVG = TextToSVG.loadSync('Anonymous_Pro.ttf');
 const convert = require('convert-svg-to-png').convert;
-const wrap = require('word-wrap');
 const sizeOf = require('buffer-image-size');
-const Promise = require("bluebird");
 const CronJob = require('cron').CronJob;
 const request = require('request');
 const date = require('date-and-time');
@@ -42,7 +40,7 @@ client.on('message', async (msg) =>  {
 		.catch(console.error);
 		return;
 	}
-	var command;
+	let command;
 	if(!msg.content.startsWith(".") && !msg.content.startsWith("t.")){
 		return;
 	}else{
@@ -55,12 +53,12 @@ client.on('message', async (msg) =>  {
 	}
 
 
-	var isAdmin=false;
+	let isAdmin=false;
 
 	if(msg.channel instanceof Discord.TextChannel){
-		var authorRoles = msg.member.roles.cache.array();
+		const authorRoles = msg.member.roles.cache.array();
 		for(i=0;i<authorRoles.length;i++){
-			var role = authorRoles[i].name.toLowerCase();
+			const role = authorRoles[i].name.toLowerCase();
 			if(role.includes("admin") || role.includes("mod")){
 				isAdmin=true;
 			}
@@ -84,12 +82,12 @@ client.on('message', async (msg) =>  {
 			const messages = await msg.channel.messages.fetch({ limit: 20 })
 
 			const mesgs = messages.filter(m => (m.attachments.size > 0)).array(); //.filter(m => m.author.id === msg.author.id)
-
+			let url;
 			for (let i = 0; i < mesgs.length; i++) {
 				if(mesgs[i] == undefined){
 					continue;
 				}
-				const url = mesgs[i].attachments.last().url.toString().toLowerCase();
+				url = mesgs[i].attachments.last().url.toString();
 				console.log("["+i+"] "+url);
 				if(!url.endsWith(".jpg") && !url.endsWith(".png")){
 
