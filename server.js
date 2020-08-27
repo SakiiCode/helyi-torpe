@@ -355,12 +355,15 @@ client.on('message', async (msg) =>  {
 			msg.delete();
 			break;
 		case "clear":
-			msg.delete().then(()=>{
-				amount = msg.content.split(' ')[1];
+			try{
+				await msg.delete();
+				const amount = msg.content.split(' ')[1];
 				if(amount !== undefined){
-					msg.channel.bulkDelete(amount).catch(console.error);
+					await msg.channel.bulkDelete(amount).catch(console.error);
 				}
-			});
+			}catch(error){
+				console.log("Error deleting messages: "+error);
+				}
 			break;
 		case "jams":
 			getJams(processJams);
