@@ -87,33 +87,33 @@ client.on('message', async (msg) =>  {
 			const mesgs = messages.filter(m => (m.attachments.size > 0)).array(); //.filter(m => m.author.id === msg.author.id)
 
 			for (let i = 0; i < mesgs.length; i++) {
-					if(mesgs[i] == undefined){
-						continue;
-					}
+				if(mesgs[i] == undefined){
+					continue;
+				}
 				const url = mesgs[i].attachments.last().url.toString().toLowerCase();
-					console.log("["+i+"] "+url);
-					if(!url.endsWith(".jpg") && !url.endsWith(".png")){
+				console.log("["+i+"] "+url);
+				if(!url.endsWith(".jpg") && !url.endsWith(".png")){
 
-						continue;
-					}
-
-					break;
-
+					continue;
 				}
 
-				if(url === undefined){
-					msg.reply("nem találtam képet");
-					console.log("No picture found for .meme");
-					msg.channel.stopTyping();
-					return;
-				}
+				break;
+
+			}
+
+			if(url === undefined){
+				msg.reply("nem találtam képet");
+				console.log("No picture found for .meme");
+				msg.channel.stopTyping();
+				return;
+			}
 
 
 
 			const text=msg.content.substring(6);
 			const bigw=1000;
 
-				//SZÖVEG MÉRETEI
+			//SZÖVEG MÉRETEI
 			const txtpadding=20;//Math.max(100-text.length*5, 20);
 			const txtwmax=bigw-2*txtpadding;
 			const charsPerLines = Math.floor(txtwmax/letterWidthPixels);
@@ -124,26 +124,26 @@ client.on('message', async (msg) =>  {
 			const txth=letterHeightPx*linesCount;
 
 			let svgs = [];
-				for(i=0;i<linesCount;i++){
-					svgs.push(textToSVG.getSVG(linesArr[i], options));
-				}
+			for(i=0;i<linesCount;i++){
+				svgs.push(textToSVG.getSVG(linesArr[i], options));
+			}
 
-				//BELSŐ KÉP MÉRETEI
+			//BELSŐ KÉP MÉRETEI
 			const imgpadding=20;
 			const destw=bigw-2*imgpadding;
 			const desth=480;
 
 
-				//KÉP HELYE FELÜLRŐL
+			//KÉP HELYE FELÜLRŐL
 			const imgy=txth+2*txtpadding+imgpadding;
 
-				//NAGY KÉP MÉRETEI
+			//NAGY KÉP MÉRETEI
 			const bigh=txth+2*txtpadding+desth+2*imgpadding;
-				console.log("Big:"+bigw+","+bigh);
-				console.log("Textlines("+(txtwmax/letterWidthPixels)+"):"+charsPerLines+"*"+linesCount);
-				console.log("Txtpadding:"+txtpadding);
-				console.log("Imgpadding:"+imgpadding);
-				console.log("DestSize:"+destw+","+desth);
+			console.log("Big:"+bigw+","+bigh);
+			console.log("Textlines("+(txtwmax/letterWidthPixels)+"):"+charsPerLines+"*"+linesCount);
+			console.log("Txtpadding:"+txtpadding);
+			console.log("Imgpadding:"+imgpadding);
+			console.log("DestSize:"+destw+","+desth);
 
 			try{
 				const body =await got('https://sindresorhus.com');
@@ -151,54 +151,54 @@ client.on('message', async (msg) =>  {
 				console.log("Pos:"+(bigw/2-Math.ceil(destw/2))+","+imgy);
 				let canvas = 
 					await sharp({
-							create: {
-								width: bigw,
-								height: bigh,
-								channels: 4,
-								background: { r: 255, g: 255, b: 255, alpha: 1 }
-							}
-						})
-						.composite([{
+						create: {
+							width: bigw,
+							height: bigh,
+							channels: 4,
+							background: { r: 255, g: 255, b: 255, alpha: 1 }
+						}
+					})
+					.composite([{
 						input:resized,
 						top:imgy+((bigh-imgy)/2-desth/2),
 						left:(bigw/2-Math.ceil(destw/2))
-						}])
-						.png()
+					}])
+					.png()
 					.toBuffer();
 				for(let currentLine=0;currentLine<svgs.length;currentLine++){
 					const svg=svgs[currentLine];
 					const s2i = await convert(svg, {
-										puppeteer: {
-											args: ['--no-sandbox', '--disable-setuid-sandbox']
-										}
-									});
+						puppeteer: {
+							args: ['--no-sandbox', '--disable-setuid-sandbox']
+						}
+					});
 
 					const dimensions = sizeOf(s2i);
 					console.log("Line size: "+ dimensions.width + ", " + dimensions.height);
-
+				
 
 					canvas = await sharp(canvas)
-								.composite([{input:s2i,
-									top:txtpadding+currentLine*letterHeightPx,
-									left:txtpadding
-								}])
-								.png()
+						.composite([{input:s2i,
+							top:txtpadding+currentLine*letterHeightPx,
+							left:txtpadding
+						}])
+						.png()
 						.toBuffer();
 
 				}
 
 				await msg.channel.send(msg.author.toString()+" által",{files:[canvas]});
-								msg.channel.stopTyping();
+				msg.channel.stopTyping();
 
 
 			}catch(error){
 				console.error(error);
 				msg.channel.stopTyping();
 			}
+				
 
-
-
-
+				
+				
 			break;
 		case "help":
 			msg.channel.send("**A Helyi Törpe parancsai**\n```"+
@@ -215,8 +215,8 @@ client.on('message', async (msg) =>  {
 			);
 			break;
 		case "iam":
-			var roleName = msg.content.split(' ')[1];
-			var id,name;
+			const roleName = msg.content.split(' ')[1];
+			let id,name;
 			switch(roleName){
 				case "tesztelo":
 					id = '539878542586937377';
@@ -298,18 +298,18 @@ client.on('message', async (msg) =>  {
 			break;
 		case "minesweeper":
 			msg.channel.startTyping();
-			mineCount = 18;
-			mapSize=10;
+			const mineCount = 18;
+			const mapSize=10;
 
-			map = [];
-			for(x=0;x<mapSize;x++){
+			let map = [];
+			for(let x=0;x<mapSize;x++){
 				map[x]=[]
-				for(y=0;y<mapSize;y++){
+				for(let y=0;y<mapSize;y++){
 					map[x][y]=0;
 				}
 			}
 
-			for(i=0;i<mineCount;i++){
+			for(let i=0;i<mineCount;i++){
 				do{
 					x=Math.floor(Math.random() * mapSize);
 					y=Math.floor(Math.random() * mapSize);
@@ -317,26 +317,18 @@ client.on('message', async (msg) =>  {
 
 				map[x][y]=9;
 
-				for(j=-1;j<=1;j++){
-					for(k=-1;k<=1;k++){
+				for(let j=-1;j<=1;j++){
+					for(let k=-1;k<=1;k++){
 						if(x+j>-1 && x+j<mapSize && y+k>-1 && y+k<mapSize && (map[x+j][y+k] != 9)){
 							map[x+j][y+k] +=1;
 						}
 					}
 				}
-				/*for(a=0;a<mapSize;a++){
-					txt="";
-					for(b=0;b<mapSize;b++){
-						txt +=map[a][b]+",";
-					}
-					console.log(txt);
-				}
-				console.log("------------------------");*/
 			}
-			txt="";
-			for(i=0;i<mapSize;i++){
+			let txt="";
+			for(let i=0;i<mapSize;i++){
 
-				for(j=0;j<mapSize;j++){
+				for(let j=0;j<mapSize;j++){
 					if(map[i][j] != 9){
 						txt +="||  :"+dg[map[i][j]]+":  ||  ";
 					}else{
@@ -346,7 +338,6 @@ client.on('message', async (msg) =>  {
 				txt+="\n";
 
 			}
-			//console.log(txt);
 			msg.channel.send(txt);
 			msg.channel.stopTyping();
 			break;
@@ -363,7 +354,7 @@ client.on('message', async (msg) =>  {
 				}
 			}catch(error){
 				console.log("Error deleting messages: "+error);
-				}
+			}
 			break;
 		case "jams":
 			getJams(processJams);
@@ -390,18 +381,17 @@ client.on("guildMemberAdd", (member) => {
 });
 
 function WordWrap(str, width){
-	splitChars = [ ' ', '-', '\t' ];
-	newLine='\n';
-	words = str.split(' ');
+	const splitChars = [ ' ', '-', '\t' ];
+	const newLine='\n';
+	const words = str.split(' ');
 		//words= Explode(str, splitChars);
 
-	curLineLength = 0;
-	strBuilder='';
+	let curLineLength = 0;
+	let strBuilder='';
 	//StringBuilder strBuilder = new StringBuilder();
-	for(i = 0; i < words.length; i += 1)
+	for(let i = 0; i < words.length; i += 1)
 	{
-		debugger;
-		word = words[i]+" ";
+		const word = words[i]+" ";
 		// If adding the new word to the current line would be too long,
 		// then put it on a new line (and split it up if it's too long).
 		if (curLineLength + word.length > width)
@@ -440,9 +430,10 @@ function WordWrap(str, width){
 
 	return strBuilder;
 }
-
+//TODO asyncra átírni
 function getJams(callback){
 	console.log("Retrieving game jams...");
+	//TODO request helyett got()
 	request('http://www.indiegamejams.com/calfeed/index.php', { json: true }, (err, res, body) => {
 		if (err) { return console.log(err); }
 		console.log("Done");
