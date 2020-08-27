@@ -10,6 +10,7 @@ const Promise = require("bluebird");
 const CronJob = require('cron').CronJob;
 const request = require('request');
 const date = require('date-and-time');
+const got = require('got');
 const port = process.env.PORT || 3000
 const attributes = {fill: 'black'};
 const options = {x: 0, y: 0, fontSize: 40, anchor: 'top', attributes: attributes};
@@ -30,7 +31,7 @@ client.on('ready', () => {
 
 });
 
-client.on('message', msg => {
+client.on('message', async (msg) =>  {
 
 	if(msg.content.toLowerCase() == 'xd'){
 		msg.channel.send({
@@ -81,17 +82,15 @@ client.on('message', msg => {
 	switch(command){
 		case "meme":
 			msg.channel.startTyping();
-			msg.channel.messages.fetch({ limit: 20 })
-			.then(messages =>{
+			const messages = await msg.channel.messages.fetch({ limit: 20 })
 
-				mesgs = messages.filter(m => (m.attachments.size > 0)).array(); //.filter(m => m.author.id === msg.author.id)
+			const mesgs = messages.filter(m => (m.attachments.size > 0)).array(); //.filter(m => m.author.id === msg.author.id)
 
-				var i, url;
-				for (i = 0; i < mesgs.length; i++) {
+			for (let i = 0; i < mesgs.length; i++) {
 					if(mesgs[i] == undefined){
 						continue;
 					}
-					url = mesgs[i].attachments.last().url.toString().toLowerCase();
+				const url = mesgs[i].attachments.last().url.toString().toLowerCase();
 					console.log("["+i+"] "+url);
 					if(!url.endsWith(".jpg") && !url.endsWith(".png")){
 
@@ -111,66 +110,47 @@ client.on('message', msg => {
 
 
 
-				text=msg.content.substring(6);
-
-				bigw=1000;
-
-
+			const text=msg.content.substring(6);
+			const bigw=1000;
 
 				//SZÖVEG MÉRETEI
-				txtpadding=20;//Math.max(100-text.length*5, 20);
-				txtwmax=bigw-2*txtpadding;
-				//txth=100;
-				//fontsize=50;
-				//console.log(txtpadding);
+			const txtpadding=20;//Math.max(100-text.length*5, 20);
+			const txtwmax=bigw-2*txtpadding;
+			const charsPerLines = Math.floor(txtwmax/letterWidthPixels);
 
+			const linesArr = WordWrap(text, charsPerLines).split(/\r\n|\r|\n/);
+			const linesCount = linesArr.length;
 
-				charsPerLines = Math.floor(txtwmax/letterWidthPixels);
+			const txth=letterHeightPx*linesCount;
 
-				//lines = wrap(text, {width: charsPerLines, indent:'', newline: "\n", trim: true});
-				lines = WordWrap(text, charsPerLines);
-				linesArr = lines.split(/\r\n|\r|\n/);
-				linesCount = linesArr.length;
-
-				txth=letterHeightPx*linesCount;
-
-				svgs = [];
+			let svgs = [];
 				for(i=0;i<linesCount;i++){
 					svgs.push(textToSVG.getSVG(linesArr[i], options));
 				}
 
 				//BELSŐ KÉP MÉRETEI
-				imgpadding=20;
-				destw=bigw-2*imgpadding;
-				desth=480;
+			const imgpadding=20;
+			const destw=bigw-2*imgpadding;
+			const desth=480;
 
 
 				//KÉP HELYE FELÜLRŐL
-				imgy=txth+2*txtpadding+imgpadding;
+			const imgy=txth+2*txtpadding+imgpadding;
 
 				//NAGY KÉP MÉRETEI
-				bigh=txth+2*txtpadding+desth+2*imgpadding;
+			const bigh=txth+2*txtpadding+desth+2*imgpadding;
 				console.log("Big:"+bigw+","+bigh);
 				console.log("Textlines("+(txtwmax/letterWidthPixels)+"):"+charsPerLines+"*"+linesCount);
 				console.log("Txtpadding:"+txtpadding);
 				console.log("Imgpadding:"+imgpadding);
 				console.log("DestSize:"+destw+","+desth);
 
-
-				var request = require('request').defaults({ encoding: null });
-				//TODO ezt 1 db pipelineba
-				request.get(url, function (err, res, body) {
-					if(err){
-						console.error("Download error:" + err);
-						msg.channel.stopTyping();
-					}
-					sharp(body)
-						.resize({width:destw, height:desth, fit: 'inside'})
-						.toBuffer((err, data, info) => {
-
-						console.log("Pic:"+info.width+","+info.height);
-						console.log("Pos:"+(bigw/2-Math.ceil(info.width/2))+","+imgy);
-						sharp({
+			try{
+				const body =await got('https://sindresorhus.com');
+				const resized = await sharp(body).resize({width:destw, height:desth, fit: 'inside'}).toBuffer();
+				console.log("Pos:"+(bigw/2-Math.ceil(destw/2))+","+imgy);
+				let canvas = 
+					await sharp({
 							create: {
 								width: bigw,
 								height: bigh,
@@ -179,68 +159,46 @@ client.on('message', msg => {
 							}
 						})
 						.composite([{
-							input:data,
-							top:imgy+((bigh-imgy)/2-info.height/2),
-							left:(bigw/2-Math.ceil(info.width/2))
+						input:resized,
+						top:imgy+((bigh-imgy)/2-desth/2),
+						left:(bigw/2-Math.ceil(destw/2))
 						}])
 						.png()
-						.toBuffer((err2, data2, info2) => {
-							if(err2){
-								console.error("Image overlay error: " + err2);
-								msg.channel.stopTyping();
-								return;
-							}
-							currentLine=0;
-							Promise.reduce(svgs, async function(total, svg) {
-								try {
-									s2i = await convert(svg, {
+					.toBuffer();
+				for(let currentLine=0;currentLine<svgs.length;currentLine++){
+					const svg=svgs[currentLine];
+					const s2i = await convert(svg, {
 										puppeteer: {
 											args: ['--no-sandbox', '--disable-setuid-sandbox']
 										}
 									});
 
-									dimensions = sizeOf(s2i);
-									console.log(dimensions.width, dimensions.height);
-								} catch (error) {
-								console.error(error);
-								currentLine++;
-								return total;
-								}
+					const dimensions = sizeOf(s2i);
+					console.log("Line size: "+ dimensions.width + ", " + dimensions.height);
 
 
-								return sharp(total)
+					canvas = await sharp(canvas)
 								.composite([{input:s2i,
 									top:txtpadding+currentLine*letterHeightPx,
 									left:txtpadding
 								}])
 								.png()
-								.toBuffer()
-								.then((data3) => { currentLine++; return data3; })
-								.catch(err3 => { console.error("Text overlay error: " + err3); msg.channel.stopTyping();});
+						.toBuffer();
 
-							}, data2).then(function(total) {
-								msg.channel.send(msg.author.toString()+" által",{files:[total]});
+				}
+
+				await msg.channel.send(msg.author.toString()+" által",{files:[canvas]});
 								msg.channel.stopTyping();
-								//mesg.delete().catch(err => {console.error(err.message);});
-							});
-
-							/*svgs.reduce(async (previousPromise, nextID) => {
-								await previousPromise;
 
 
-
-							}, Promise.resolve());*/
+			}catch(error){
+				console.error(error);
+				msg.channel.stopTyping();
+			}
 
 
 
-						})
 
-
-					})
-				});
-
-			})
-			.catch(err => {console.error(err);msg.channel.stopTyping();});
 			break;
 		case "help":
 			msg.channel.send("**A Helyi Törpe parancsai**\n```"+
