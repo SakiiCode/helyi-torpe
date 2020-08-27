@@ -279,24 +279,19 @@ client.on('message', async (msg) =>  {
 				"**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n");
 			break;
 		case "poll":
-			attr = msg.content.substring(6).split(",");
-			reply = "@here __szavazás: **"+attr[0]+"**__\n";
-			answers = Math.min(attr.length-1,11);
+			const attr = msg.content.substring(6).split(",");
+			let reply = "@here __szavazás: **"+attr[0]+"**__\n";
+			const answers = Math.min(attr.length-1,11);
 			for(i=0;i<answers;i++){
 			  reply += pollChars[i]+":"+attr[i+1]+"\n";
 			}
 	
-			msg.channel.send(reply)
-			.then(message => {
-			  chs = pollChars.slice(0,answers);
-			  //console.log(chs);
-			  Promise.reduce(chs, function (total, ch) {
-				return message.react(ch).then(reaction => {return reaction});
-	
-			  },chs[0]);
-	
-	
-			});
+			const message = await msg.channel.send(reply);
+			const chs = pollChars.slice(0,answers);
+			for(let i=0;i<chs.length;i++){
+				const ch=chs[i];
+				await message.react(ch);
+			}
 			break;
 		case "source":
 			msg.reply("https://github.com/SakiiCode/helyi-torpe/blob/master/server.js");
