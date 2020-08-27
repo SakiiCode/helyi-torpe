@@ -13,6 +13,8 @@ https://discordapp.com/api/oauth2/authorize?client_id=460161259191402498&permiss
 
 
 ### Parancsok
+Ütközések elkerülése érdekében a "." helyett a "t." prefix is működik
+
 ```
 #bot-spam
    .help                          parancsok

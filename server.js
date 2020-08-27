@@ -41,13 +41,19 @@ client.on('message', msg => {
 		  })
 		.catch(console.error);
 		return;
-  	}
-	if(!msg.content.startsWith(".")){
+	}
+	var command;
+	if(!msg.content.startsWith(".") && !msg.content.startsWith("t.")){
 		return;
 	}else{
 		console.log(msg.content);
+		if(msg.content.startsWith("t.")){
+			command = msg.content.substring(2,msg.content.length).split(" ")[0];
+		}else{
+			command = msg.content.substring(1,msg.content.length).split(" ")[0];		
+		}
 	}
-	var command = msg.content.substring(1,msg.content.length).split(" ")[0];
+
 
 	var isAdmin=false;
 
