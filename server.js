@@ -89,7 +89,7 @@ client.on('message', async (msg) =>  {
 				}
 				url = mesgs[i].attachments.last().url.toString();
 				console.log("["+i+"] "+url);
-				if(!url.endsWith(".jpg") && !url.endsWith(".png")){
+				if(!url.endsWith(".jpg") && !url.endsWith(".png")  && !url.endsWith(".gif")){
 
 					continue;
 				}
