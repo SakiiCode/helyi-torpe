@@ -25,7 +25,7 @@ https://discordapp.com/api/oauth2/authorize?client_id=460161259191402498&permiss
 bárhol
    .meme <szöveg>                 legutóbbi képedhez felirat
    .poll <kérdés,válasz1,...>     szavazás
-   xd                             xd
+   xd...                          xd
 ```
 
 #### A készítő szervere

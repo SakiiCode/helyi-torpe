@@ -30,7 +30,7 @@ client.on('ready', () => {
 
 client.on('message', async (msg) =>  {
 
-	if(msg.content.toLowerCase() == 'xd'){
+	if(msg.content.toLowerCase().startsWith('xd...')){
 		msg.channel.send({
 			files: [{
 			  attachment: 'xd.gif',
@@ -48,7 +48,7 @@ client.on('message', async (msg) =>  {
 		if(msg.content.startsWith("t.")){
 			command = msg.content.substring(2,msg.content.length).split(" ")[0];
 		}else{
-			command = msg.content.substring(1,msg.content.length).split(" ")[0];		
+			command = msg.content.substring(1,msg.content.length).split(" ")[0];
 		}
 	}
 
@@ -146,7 +146,7 @@ client.on('message', async (msg) =>  {
 				const body = Buffer.from((await Axios.get(url, {responseType:'arraybuffer'})).data,'base64');
 				const resized = await sharp(body).resize({width:destw, height:desth, fit: 'inside'}).toBuffer();
 				console.log("Pos:"+(bigw/2-Math.ceil(destw/2))+","+imgy);
-				let canvas = 
+				let canvas =
 					await sharp({
 						create: {
 							width: bigw,
@@ -172,7 +172,7 @@ client.on('message', async (msg) =>  {
 
 					const dimensions = sizeOf(s2i);
 					console.log("Line size: "+ dimensions.width + ", " + dimensions.height);
-				
+
 
 					canvas = await sharp(canvas)
 						.composite([{input:s2i,
@@ -192,10 +192,10 @@ client.on('message', async (msg) =>  {
 				console.error(error);
 				msg.channel.stopTyping();
 			}
-				
 
-				
-				
+
+
+
 			break;
 		case "help":
 			msg.channel.send("**A Helyi Törpe parancsai**\n```"+
@@ -282,7 +282,7 @@ client.on('message', async (msg) =>  {
 			for(i=0;i<answers;i++){
 			  reply += pollChars[i]+":"+attr[i+1]+"\n";
 			}
-	
+
 			const message = await msg.channel.send(reply);
 			const chs = pollChars.slice(0,answers);
 			for(let i=0;i<chs.length;i++){
