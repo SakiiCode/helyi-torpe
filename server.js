@@ -23,7 +23,7 @@ const botSpamCommands = ["help","iam","roles","source","minesweeper"];
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
-  client.user.setActivity('#bot-spam | .help', { type: 'WATCHING' });
+  client.user.setActivity('#bot-spam | t.help', { type: 'WATCHING' });
   job.start();
 
 });
@@ -41,15 +41,11 @@ client.on('message', async (msg) =>  {
 		return;
 	}
 	let command;
-	if(!msg.content.startsWith(".") && !msg.content.startsWith("t.")){
+	if(!msg.content.startsWith("t.")){
 		return;
 	}else{
 		console.log(msg.content);
-		if(msg.content.startsWith("t.")){
-			command = msg.content.substring(2,msg.content.length).split(" ")[0];
-		}else{
-			command = msg.content.substring(1,msg.content.length).split(" ")[0];
-		}
+		command = msg.content.substring(2,msg.content.length).split(" ")[0];
 	}
 
 
@@ -100,7 +96,7 @@ client.on('message', async (msg) =>  {
 
 			if(url === undefined){
 				msg.reply("nem találtam képet");
-				console.log("No picture found for .meme");
+				console.log("No picture found for t.meme");
 				msg.channel.stopTyping();
 				return;
 			}
@@ -200,15 +196,15 @@ client.on('message', async (msg) =>  {
 		case "help":
 			msg.channel.send("**A Helyi Törpe parancsai**\n```"+
 			"#bot-spam\n"+
-			"   .help                          parancsok\n"+
-			"   .roles                         role-ok listája\n"+
-			"   .iam <szerep>                  role fel/levétele\n"+
-			"   .source                        a Helyi Törpe forráskódja\n"+
-			"   .minesweeper                   aknakereső\n"+
+			"   t.help                          parancsok\n"+
+			"   t.roles                         role-ok listája\n"+
+			"   t.iam <szerep>                  role fel/levétele\n"+
+			"   t.source                        a Helyi Törpe forráskódja\n"+
+			"   t.minesweeper                   aknakereső\n"+
 			"bárhol\n"+
-			"   .meme <szöveg>                 legutóbbi képedhez felirat\n"+
-			"   .poll <kérdés,válasz1,...>     szavazás\n"+
-			"   xd                             xd```"
+			"   t.meme <szöveg>                 legutóbbi képedhez felirat\n"+
+			"   t.poll <kérdés,válasz1,...>     szavazás\n"+
+			"   xd...                             xd```"
 			);
 			break;
 		case "iam":
@@ -266,14 +262,14 @@ client.on('message', async (msg) =>  {
 		case "roles":
 			msg.reply(
 				"válassz szerepet:\n"+
-				"**.iam tesztelo** - Tesztelő\n"+
-				"**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
-				"**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
-				"**.iam kod** - Programozó\n"+
-				"**.iam grafikus** - 2D/3D Grafikus\n"+
-				"**.iam palya** - Pályatervező\n"+
-				"**.iam youtuber** - YouTuber/Streamer"+
-				"**.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n");
+				"**t.iam tesztelo** - Tesztelő\n"+
+				"**t.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
+				"**t.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
+				"**t.iam kod** - Programozó\n"+
+				"**t.iam grafikus** - 2D/3D Grafikus\n"+
+				"**t.iam palya** - Pályatervező\n"+
+				"**t.iam youtuber** - YouTuber/Streamer"+
+				"**t.iam jammer** - Értesítést kapsz az itch.io-s game jam-ekről (hamarosan!)\n");
 			break;
 		case "poll":
 			const attr = msg.content.substring(6).split(",");
@@ -365,14 +361,14 @@ client.on("guildMemberAdd", (member) => {
 	if(member.guild.id == "248820876814843904"){
 		member.guild.channels.resolve("442082649700302848").send(
 		"Üdvözlünk " + member.user.toString() + " a " + member.guild.name + " szerveren, választhatsz egy vagy több szerepet:\n"+
-		"**.iam tesztelo** - Tesztelő\n"+
-		"**.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
-		"**.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
-		"**.iam kod** - Programozó\n"+
-		"**.iam grafikus** - 2D/3D Grafikus\n"+
-		"**.iam palya** - Pályatervező\n"+
-		"**.iam jammer** - Értesítést kapsz az itch.io-s és gamejolt-os game jam-ekről minden hétfőn, pénteken és szombaton\n"+
-		"**.iam youtuber** - YouTuber/Streamer\n"+
+		"**t.iam tesztelo** - Tesztelő\n"+
+		"**t.iam producer** - Kiadó/Ötletgazda/Projekt manager/Marketinges\n"+
+		"**t.iam hang** - Hangmérnök/Szinkronszínész/Zeneszerző\n"+
+		"**t.iam kod** - Programozó\n"+
+		"**t.iam grafikus** - 2D/3D Grafikus\n"+
+		"**t.iam palya** - Pályatervező\n"+
+		"**t.iam jammer** - Értesítést kapsz az itch.io-s és gamejolt-os game jam-ekről minden hétfőn, pénteken és szombaton\n"+
+		"**t.iam youtuber** - YouTuber/Streamer\n"+
 		"**Kérlek olvasd el a "+member.guild.channels.resolve("442084233767419916").toString()+" csatornát is!**");
 	}
 });

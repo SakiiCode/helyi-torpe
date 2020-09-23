@@ -13,18 +13,17 @@ https://discordapp.com/api/oauth2/authorize?client_id=460161259191402498&permiss
 
 
 ### Parancsok
-Ütközések elkerülése érdekében a "." helyett a "t." prefix is működik
 
 ```
 #bot-spam
-   .help                          parancsok
-   .roles                         szerep-címkék listája
-   .iam <szerep>                  szerep-címke felvevése
-   .source                        a Helyi Törpe forráskódja
-   .minesweeper                   aknakereső
+   t.help                          parancsok
+   t.roles                         szerep-címkék listája
+   t.iam <szerep>                  szerep-címke felvevése
+   t.source                        a Helyi Törpe forráskódja
+   t.minesweeper                   aknakereső
 bárhol
-   .meme <szöveg>                 legutóbbi képedhez felirat
-   .poll <kérdés,válasz1,...>     szavazás
+   t.meme <szöveg>                 legutóbbi képedhez felirat
+   t.poll <kérdés,válasz1,...>     szavazás
    xd...                          xd
 ```
 
