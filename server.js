@@ -388,7 +388,7 @@ function WordWrap(str, width){
 	//StringBuilder strBuilder = new StringBuilder();
 	for(let i = 0; i < words.length; i += 1)
 	{
-		const word = words[i]+" ";
+		let word = words[i]+" ";
 		// If adding the new word to the current line would be too long,
 		// then put it on a new line (and split it up if it's too long).
 		if (curLineLength + word.length > width)
