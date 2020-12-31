@@ -46,6 +46,7 @@ client.on('message', async (msg) =>  {
 	}else{
 		console.log(msg.content);
 		command = msg.content.substring(2,msg.content.length).split(" ")[0];
+    console.log("Command:"+command);
 	}
 
 
@@ -162,6 +163,7 @@ client.on('message', async (msg) =>  {
 					const svg=svgs[currentLine];
 					const s2i = await convert(svg, {
 						puppeteer: {
+              headless:true,
 							args: ['--no-sandbox', '--disable-setuid-sandbox']
 						}
 					});
