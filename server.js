@@ -1,5 +1,8 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS,
+   Discord.Intents.FLAGS.GUILD_MESSAGES,
+   Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+   Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING] });
 const sharp = require('sharp');
 const TextToSVG = require('text-to-svg');
 const textToSVG = TextToSVG.loadSync('Anonymous_Pro.ttf');
@@ -53,7 +56,7 @@ client.on('message', async (msg) =>  {
 	let isAdmin=false;
 
 	if(msg.channel instanceof Discord.TextChannel){
-		const authorRoles = msg.member.roles.cache.array();
+		const authorRoles = msg.member.roles.cache;
 		for(i=0;i<authorRoles.length;i++){
 			const role = authorRoles[i].name.toLowerCase();
 			if(role.includes("admin") || role.includes("mod")){
@@ -75,30 +78,71 @@ client.on('message', async (msg) =>  {
 
 	switch(command){
 		case "meme":
-			msg.channel.startTyping();
-			const messages = await msg.channel.messages.fetch({ limit: 20 })
+			msg.channel.sendTyping();
+      let url;
+      // FROM ATTACHMENT
+      if(msg.attachments.size>0){
+        const last = msg.attachments.last();
+        if(last.url.endsWith(".jpg") || last.url.endsWith(".png") || last.url.endsWith(".gif")){
+          url = last.url;
+        }
+      }
 
-			const mesgs = messages.filter(m => (m.attachments.size > 0)).array(); //.filter(m => m.author.id === msg.author.id)
-			let url;
-			for (let i = 0; i < mesgs.length; i++) {
-				if(mesgs[i] == undefined){
-					continue;
-				}
-				url = mesgs[i].attachments.last().url.toString();
-				console.log("["+i+"] "+url);
-				if(!url.endsWith(".jpg") && !url.endsWith(".png")  && !url.endsWith(".gif")){
+      // FROM REPLY REFERENCE
+      if(url ===undefined){
+        const ref = msg.reference;
 
-					continue;
-				}
+        if(ref != null){
+          console.log("Has reference");
+          const repliedTo = await msg.channel.messages.fetch(ref.messageId);
+          if(repliedTo.attachments==null){
+            console.error("attachments = null ("+repliedTo.content+","+ref+","+msg+")");
+            return;
+          }
+          if(repliedTo.attachments.size>0){
 
-				break;
+            const tmpUrl = repliedTo.attachments.last().url.toString();
+            console.log("Has attachment:"+tmpUrl);
+            if(tmpUrl.endsWith(".jpg") || tmpUrl.endsWith(".png") || tmpUrl.endsWith(".gif")){
+              console.log("Has image");
+              url = tmpUrl;
+            }
+          }else{
+            console.error("No attachment:"+repliedTo+","+repliedTo.attachments+","+repliedTo.attachments.size);
+          }
+        }
+      }
 
-			}
+      // FROM CHANNEL
+      if(url === undefined){
+        console.log("No picture yet");
+
+  			const messages = await msg.channel.messages.fetch({ limit: 20 }).catch(console.error);
+  			const mesgs = messages.filter(m => (m.attachments.size > 0 &&
+          (m.attachments.last().url.endsWith(".jpg") ||
+            m.attachments.last().url.endsWith(".png") ||
+            m.attachments.last().url.endsWith(".gif")
+        ))); //.filter(m => m.author.id === msg.author.id)
+        if(mesgs.size>0){
+          url=mesgs.last().attachments.last().url;
+        }
+
+        /*
+  			for (let i = mesgs.lenght-1; i >= 0; i--) {
+  				const tmpUrl = mesgs[i].attachments.last().url.toString();
+  				console.log("["+i+"] "+url);
+  				if(url.endsWith(".jpg") || url.endsWith(".png")  || url.endsWith(".gif")){
+
+  					url = tmpUrl;
+            break;
+  				}
+
+  			}*/
+      }
 
 			if(url === undefined){
-				msg.reply("nem találtam képet");
+				msg.reply("Nem találtam képet :(");
 				console.log("No picture found for t.meme");
-				msg.channel.stopTyping();
 				return;
 			}
 
@@ -159,6 +203,7 @@ client.on('message', async (msg) =>  {
 					}])
 					.png()
 					.toBuffer();
+
 				for(let currentLine=0;currentLine<svgs.length;currentLine++){
 					const svg=svgs[currentLine];
 					const s2i = await convert(svg, {
@@ -182,13 +227,10 @@ client.on('message', async (msg) =>  {
 
 				}
 
-				await msg.channel.send(msg.author.toString()+" által",{files:[canvas]});
-				msg.channel.stopTyping();
-
+        await msg.channel.send({content: msg.author.toString()+" által",files:[canvas]});
 
 			}catch(error){
 				console.error(error);
-				msg.channel.stopTyping();
 			}
 
 
@@ -292,7 +334,7 @@ client.on('message', async (msg) =>  {
 			msg.reply("https://github.com/SakiiCode/helyi-torpe/blob/master/server.js");
 			break;
 		case "minesweeper":
-			msg.channel.startTyping();
+			msg.channel.sendTyping();
 			const mineCount = 18;
 			const mapSize=10;
 
@@ -334,10 +376,8 @@ client.on('message', async (msg) =>  {
 
 			}
 			msg.channel.send(txt);
-			msg.channel.stopTyping();
 			break;
 		case "stop":
-			msg.channel.stopTyping();
 			msg.delete();
 			break;
 		case "clear":
