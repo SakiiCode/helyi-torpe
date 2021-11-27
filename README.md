@@ -26,7 +26,3 @@ bárhol
    t.poll <kérdés,válasz1,...>     szavazás
    xd...                          xd
 ```
-
-#### A készítő szervere
-
-Ha csatlakozni akarsz: https://discord.gg/SpqeVT
