@@ -14,8 +14,8 @@ const date = require('date-and-time');
 const Axios = require('axios');
 const attributes = {fill: 'black'};
 const options = {x: 0, y: 0, fontSize: 40, anchor: 'top', attributes: attributes};
-const letterWidthPixels = 25;
-const letterHeightPx = 60;
+const letterWidthPx = 22;
+const letterHeightPx = 50;
 const pollChars = ['🇦','🇧','🇨','🇩','🇪','🇫','🇬','🇭','🇮','🇯','🇰'];
 var dg = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 const job = new CronJob('0 20 13 * * 1,5,6', function() {
@@ -79,66 +79,64 @@ client.on('message', async (msg) =>  {
 	switch(command){
 		case "meme":
 			msg.channel.sendTyping();
-      let url;
-      // FROM ATTACHMENT
-      if(msg.attachments.size>0){
-        const last = msg.attachments.last();
-        if(last.url.endsWith(".jpg") || last.url.endsWith(".png") || last.url.endsWith(".gif")){
-          url = last.url;
-        }
-      }
+			let url;
 
-      // FROM REPLY REFERENCE
-      if(url ===undefined){
-        const ref = msg.reference;
 
-        if(ref != null){
-          console.log("Has reference");
-          const repliedTo = await msg.channel.messages.fetch(ref.messageId);
-          if(repliedTo.attachments==null){
-            console.error("attachments = null ("+repliedTo.content+","+ref+","+msg+")");
-            return;
-          }
-          if(repliedTo.attachments.size>0){
+			// FROM ATTACHMENT
+			if(msg.attachments.size>0){
+				const last = msg.attachments.last();
+				if(last.url.endsWith(".jpg") || last.url.endsWith(".png") || last.url.endsWith(".gif")){
+					url = last.url;
+				}
+			}
 
-            const tmpUrl = repliedTo.attachments.last().url.toString();
-            console.log("Has attachment:"+tmpUrl);
-            if(tmpUrl.endsWith(".jpg") || tmpUrl.endsWith(".png") || tmpUrl.endsWith(".gif")){
-              console.log("Has image");
-              url = tmpUrl;
-            }
-          }else{
-            console.error("No attachment:"+repliedTo+","+repliedTo.attachments+","+repliedTo.attachments.size);
-          }
-        }
-      }
+			// FROM REPLY REFERENCE
+			if(url ===undefined){
+				const ref = msg.reference;
 
-      // FROM CHANNEL
-      if(url === undefined){
-        console.log("No picture yet");
+				if(ref != null){
+					console.log("Has reference");
+					const repliedTo = await msg.channel.messages.fetch(ref.messageId);
+					if(repliedTo.attachments==null){
+						console.error("attachments = null ("+repliedTo.content+","+ref+","+msg+")");
+						return;
+					}
+					if(repliedTo.attachments.size>0){
 
-  			const messages = await msg.channel.messages.fetch({ limit: 20 }).catch(console.error);
-  			const mesgs = messages.filter(m => (m.attachments.size > 0 &&
-          (m.attachments.last().url.endsWith(".jpg") ||
-            m.attachments.last().url.endsWith(".png") ||
-            m.attachments.last().url.endsWith(".gif")
-        ))); //.filter(m => m.author.id === msg.author.id)
-        if(mesgs.size>0){
-          url=mesgs.last().attachments.last().url;
-        }
+						const tmpUrl = repliedTo.attachments.last().url.toString();
+						console.log("Has attachment:"+tmpUrl);
+						if(tmpUrl.endsWith(".jpg") || tmpUrl.endsWith(".png") || tmpUrl.endsWith(".gif")){
+							console.log("Has image");
+							url = tmpUrl;
+						}
+					}else{
+						console.error("No attachment:"+repliedTo+","+repliedTo.attachments+","+repliedTo.attachments.size);
+					}
+				}
+			}
 
-        /*
-  			for (let i = mesgs.lenght-1; i >= 0; i--) {
-  				const tmpUrl = mesgs[i].attachments.last().url.toString();
-  				console.log("["+i+"] "+url);
-  				if(url.endsWith(".jpg") || url.endsWith(".png")  || url.endsWith(".gif")){
+			// FROM CHANNEL
+			if(url === undefined){
+				console.log("No picture yet");
+				try{
+					const messages = await msg.channel.messages.fetch({ limit: 20 });
+					
+					const mesgs = messages.filter(m => (m.attachments.size > 0 &&
+						(m.attachments.last().url.endsWith(".jpg") ||
+							m.attachments.last().url.endsWith(".png") ||
+							m.attachments.last().url.endsWith(".gif")
+						)));
 
-  					url = tmpUrl;
-            break;
-  				}
-
-  			}*/
-      }
+					if(mesgs.size>0){
+						url = mesgs.first().attachments.last().url;
+					}
+					
+				}catch(error){
+					console.log(error);
+					msg.reply("Hiba: "+error);
+					return;
+				}
+			}
 
 			if(url === undefined){
 				msg.reply("Nem találtam képet :(");
@@ -148,13 +146,13 @@ client.on('message', async (msg) =>  {
 
 
 
-			const text=msg.content.substring(6);
+			const text=msg.content.substring(7);
 			const bigw=1000;
 
 			//SZÖVEG MÉRETEI
 			const txtpadding=20;//Math.max(100-text.length*5, 20);
 			const txtwmax=bigw-2*txtpadding;
-			const charsPerLines = Math.floor(txtwmax/letterWidthPixels);
+			const charsPerLines = Math.floor(txtwmax/letterWidthPx);
 
 			const linesArr = WordWrap(text, charsPerLines).split(/\r\n|\r|\n/);
 			const linesCount = linesArr.length;
@@ -168,25 +166,29 @@ client.on('message', async (msg) =>  {
 
 			//BELSŐ KÉP MÉRETEI
 			const imgpadding=20;
-			const destw=bigw-2*imgpadding;
 			const desth=480;
+			const destw=bigw-2*imgpadding;
+			
 
 
-			//KÉP HELYE FELÜLRŐL
-			const imgy=txth+2*txtpadding+imgpadding;
+			//KÉP HELYE
+			const imgx = bigw/2-destw/2;
+			const imgy = txth+2*txtpadding;
+			
 
-			//NAGY KÉP MÉRETEI
-			const bigh=txth+2*txtpadding+desth+2*imgpadding;
+			//NAGY KÉP MAGASSÁGA
+			const bigh=imgy+desth+imgpadding;
+
 			console.log("Big:"+bigw+","+bigh);
-			console.log("Textlines("+(txtwmax/letterWidthPixels)+"):"+charsPerLines+"*"+linesCount);
+			console.log("Textlines("+(txtwmax/letterWidthPx)+"):"+charsPerLines+"*"+linesCount);
 			console.log("Txtpadding:"+txtpadding);
 			console.log("Imgpadding:"+imgpadding);
 			console.log("DestSize:"+destw+","+desth);
 
 			try{
 				const body = Buffer.from((await Axios.get(url, {responseType:'arraybuffer'})).data,'base64');
-				const resized = await sharp(body).resize({width:destw, height:desth, fit: 'inside'}).toBuffer();
-				console.log("Pos:"+(bigw/2-Math.ceil(destw/2))+","+imgy);
+				const resized = await sharp(body).resize({width:destw, height:desth, fit: 'contain', background:'white'}).toBuffer();
+				console.log("Pos:"+imgx+","+imgy);
 				let canvas =
 					await sharp({
 						create: {
@@ -198,8 +200,8 @@ client.on('message', async (msg) =>  {
 					})
 					.composite([{
 						input:resized,
-						top:imgy+((bigh-imgy)/2-desth/2),
-						left:(bigw/2-Math.ceil(destw/2))
+						top:imgy,
+						left:imgx
 					}])
 					.png()
 					.toBuffer();
@@ -208,7 +210,7 @@ client.on('message', async (msg) =>  {
 					const svg=svgs[currentLine];
 					const s2i = await convert(svg, {
 						puppeteer: {
-              headless:true,
+              				headless:true,
 							args: ['--no-sandbox', '--disable-setuid-sandbox']
 						}
 					});
