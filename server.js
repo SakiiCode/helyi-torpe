@@ -319,7 +319,7 @@ client.on('message', async (msg) =>  {
 			break;
 		case "poll":
 			const attr = msg.content.substring(6).split(",");
-			let reply = "@here __szavazás: **"+attr[0]+"**__\n";
+			let reply = "__Szavazás: **"+attr[0]+"**__\n";
 			const answers = Math.min(attr.length-1,11);
 			for(i=0;i<answers;i++){
 			  reply += pollChars[i]+":"+attr[i+1]+"\n";
