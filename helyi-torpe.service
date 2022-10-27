@@ -1,0 +1,13 @@
+[Unit]
+Description=Helyi Torpe systemd service
+Wants=network-online.target
+After=network-online.target
+
+
+[Service]
+Type=simple
+ExecStart=npx nodemon server.js
+WorkingDirectory=
+
+[Install]
+WantedBy=default.target

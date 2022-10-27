@@ -21,6 +21,7 @@
     "date-and-time": "^0.14.2",
     "discord.js": "^13.2.0",
     "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20",
     "request": "^2.88.2",
     "sharp": "^0.30.5",
     "text-to-svg": "^3.1.5"
