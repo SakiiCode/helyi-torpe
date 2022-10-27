@@ -1,7 +1,10 @@
 const Discord = require('discord.js');
-const client = new Discord.Client({ intents: [Discord.Intents.FLAGS.GUILDS,
+const client = new Discord.Client({ intents: [
+	Discord.Intents.FLAGS.GUILDS,
    Discord.Intents.FLAGS.GUILD_MESSAGES,
    Discord.Intents.FLAGS.GUILD_MESSAGE_TYPING,
+	Discord.Intents.FLAGS.DIRECT_MESSAGES,
+	Discord.Intents.FLAGS.DIRECT_MESSAGES,
    Discord.Intents.FLAGS.DIRECT_MESSAGE_TYPING] });
 const sharp = require('sharp');
 const TextToSVG = require('text-to-svg');
@@ -56,12 +59,14 @@ client.on('message', async (msg) =>  {
 	let isAdmin=false;
 
 	if(msg.channel instanceof Discord.TextChannel){
+		if(msg.member){
 		const authorRoles = msg.member.roles.cache;
 		for(i=0;i<authorRoles.length;i++){
 			const role = authorRoles[i].name.toLowerCase();
 			if(role.includes("admin") || role.includes("mod")){
 				isAdmin=true;
 			}
+			}	
 		}
 	}
 
