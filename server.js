@@ -15,6 +15,7 @@ const CronJob = require('cron').CronJob;
 const request = require('request');
 const date = require('date-and-time');
 const Axios = require('axios');
+const wrap = require('wordwrap');
 const attributes = {fill: 'black'};
 const options = {x: 0, y: 0, fontSize: 40, anchor: 'top', attributes: attributes};
 const letterWidthPx = 22;
@@ -163,8 +164,8 @@ client.on('message', async (msg) =>  {
 			const txtpadding=20;//Math.max(100-text.length*5, 20);
 			const txtwmax=bigw-2*txtpadding;
 			const charsPerLines = Math.floor(txtwmax/letterWidthPx);
-
-			const linesArr = WordWrap(text, charsPerLines).split(/\r\n|\r|\n/);
+			const WordWrap = wrap(charsPerLines)
+			const linesArr = WordWrap(text).split(/\r\n|\r|\n/);
 			const linesCount = linesArr.length;
 
 			const txth=letterHeightPx*linesCount;
@@ -426,7 +427,7 @@ client.on("guildMemberAdd", (member) => {
 		"**Kérlek olvasd el a "+member.guild.channels.resolve("442084233767419916").toString()+" csatornát is!**");
 	}
 });
-
+/*
 function WordWrap(str, width){
 	const splitChars = [ ' ', '-', '\t' ];
 	const newLine='\n';
@@ -476,7 +477,7 @@ function WordWrap(str, width){
 	}
 
 	return strBuilder;
-}
+}*/
 //TODO asyncra átírni
 function getJams(callback){
 	console.log("Retrieving game jams...");
