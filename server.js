@@ -133,9 +133,9 @@ client.on('message', async (msg) =>  {
 					const messages = await msg.channel.messages.fetch({ limit: 20 });
 					
 					const mesgs = messages.filter(m => (m.attachments.size > 0 &&
-						(m.attachments.last().url.endsWith(".jpg") ||
-							m.attachments.last().url.endsWith(".png") ||
-							m.attachments.last().url.endsWith(".gif")
+						(m.attachments.last().url.replace(/\?.*/,"").endsWith(".jpg") ||
+							m.attachments.last().url.replace(/\?.*/,"").endsWith(".png") ||
+							m.attachments.last().url.replace(/\?.*/,"").endsWith(".gif")
 						)));
 
 					if(mesgs.size>0){
