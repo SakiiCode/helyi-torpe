@@ -13,21 +13,17 @@
   "author": "Sakii",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.2",
+    "axios": "^0.28.1",
     "buffer-image-size": "^0.6.4",
-    "canvas": "^2.6.1",
+    "canvas": "^2.11.2",
     "convert-svg-to-png": "^0.6.4",
     "cron": "^1.8.2",
     "date-and-time": "^0.14.2",
     "discord.js": "^13.2.0",
     "dotenv": "^16.0.3",
-    "nodemon": "^2.0.20",
-    "request": "^2.88.2",
+    "nodemon": "^3.1.0",
     "sharp": "^0.32.6",
     "text-to-svg": "^3.1.5",
     "wordwrap": "^1.0.0"
-  },
-  "engines": {
-    "node": "16.x"
   }
 }
