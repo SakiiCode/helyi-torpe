@@ -25,7 +25,7 @@ var dg = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight'
 const job = new CronJob('0 20 13 * * 1,5,6', function() {
    getJams(processJams);
 }, null, true, 'Europe/Budapest');
-const adminCommands = ["msg","clear","jams","stop"];
+const adminCommands = ["msg","clear","stop"];
 const botSpamCommands = ["help","iam","roles","source","minesweeper"];
 
 require("dotenv").config();
@@ -36,7 +36,7 @@ const TOKEN = process.env.TOKEN;
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
   client.user.setActivity('#bot-spam | t.help', { type: 'WATCHING' });
-  job.start();
+  //job.start();
 
 });
 
@@ -405,7 +405,8 @@ client.on('message', async (msg) =>  {
 			}
 			break;
 		case "jams":
-			getJams(processJams);
+			msg.channel.sendTyping();
+			processJams(await getJams(), msg.channel);
 			break;
 		//default: msg.reply(" ismeretlen parancs");
 	}
@@ -478,60 +479,71 @@ function WordWrap(str, width){
 
 	return strBuilder;
 }*/
-//TODO asyncra átírni
-function getJams(callback){
+async function getJams(){
 	console.log("Retrieving game jams...");
-	//TODO request helyett got()
-	request('http://www.indiegamejams.com/calfeed/index.php', { json: true }, (err, res, body) => {
-		if (err) { return console.log(err); }
-		console.log("Done");
-		jams = [];
-		for(i=0;i<body.length;i++){
-			jam = body[i];
+	let body;
+	try{
+		body = (await Axios.get('http://www.indiegamejams.com/calfeed/index.php')).data;
+	}catch(e){
+		console.error(e);
+		return [];
+	}
+	console.log("Done");
+	jams = [];
+	for(i=0;i<body.length;i++){
+		jam = body[i];
 
-			//console.log(jam.summary);
-			//20190301T050000Z
-			if(jam.dtstart != undefined){
-				startdate = date.addHours(date.parse(jam.dtstart, 'YYYYMMDD hhmmss '),1);
-				//console.log(startdate);
-				jam2 = {
-					name:jam.summary,
-					url:jam.description.split('\n')[0],
-					start:startdate};
-				jams.push(jam2);
-				//console.log(jam2);
-			}
+		//console.log(jam.summary);
+		//20190301T050000Z
+		if(jam.dtstart != undefined){
+			startdate = date.addHours(date.parse(jam.dtstart, 'YYYYMMDD hhmmss '),1);
+			//console.log(startdate);
+			jam2 = {
+				name:jam.summary,
+				url:jam.description.split('\n')[0],
+				start:startdate};
+			jams.push(jam2);
+			//console.log(jam2);
 		}
+	}
 
 
-		jams.sort(function(a,b){
-			// Turn your strings into dates, and then subtract them
-			// to get a value that is either negative, positive, or zero.
-			sum = date.subtract(a.start, b.start).toSeconds();
-			//console.log(sum);
-			return sum;
-		});
-
-		currentjams = jams.filter((jam)=>{
-			return date.subtract(jam.start,new Date()).toSeconds() >0;
-
-		});
-		//console.log(currentjams);
-		callback(currentjams.slice(0,5));
+	jams.sort(function(a,b){
+		// Turn your strings into dates, and then subtract them
+		// to get a value that is either negative, positive, or zero.
+		sum = date.subtract(a.start, b.start).toSeconds();
+		//console.log(sum);
+		return sum;
 	});
+
+	currentjams = jams.filter((jam)=>{
+		return date.subtract(jam.start,new Date()).toSeconds() >0;
+
+	});
+	//console.log(currentjams);
+	return currentjams.slice(0,5);
 }
 
-function processJams(jams){
+function processJams(jams, channel){
 
-  guild = client.guilds.resolve('248820876814843904');
-  jammer = guild.roles.resolve('539878964248838181');
-  var reply = jammer.toString() + "ek, ezeken tudtok részt venni a következő néhány napon:\n";
+  
+	let message = ""
   for(i=0;i<jams.length;i++){
-	var jam = jams[i];
-	reply += jam.name+"  ("+date.format(jam.start, 'MMM. DD. HH:mm')+"-tól)\n";
-	reply += "    <"+jam.url+">\n";
+		var jam = jams[i];
+		message += jam.name+"  ("+date.format(jam.start, 'MMM. DD. HH:mm')+"-tól)\n";
+		message += "    <"+jam.url+">\n";
   }
-  guild.channels.resolve('442082917049565214').send(reply);
+	if(channel){
+		reply = "**Jammer**ek, ezeken tudtok részt venni a következő néhány napon:\n";
+		reply += message;
+		channel.send(reply)
+	}else{
+		guild = client.guilds.resolve('248820876814843904');
+  	jammer = guild.roles.resolve('539878964248838181');
+		let reply = jammer.toString()+"ek, ezeken tudtok részt venni a következő néhány napon:\n";
+		reply += message;
+  	guild.channels.resolve('442082917049565214').send(reply);
+	}
   //console.log(jammer.toString());
   console.log("Jam list sent");
 
